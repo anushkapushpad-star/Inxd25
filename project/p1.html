@@ -5,251 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>What makes a good life?</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Link to the external style.css provided by the user -->
+<link rel="stylesheet" href="style.css">
 <style>
-  :root{
-    --bg:#fff4b8;
-    --panel:#fffdf7;
-    --panel-line:#f3d97d;
-    --ink:#2F2213;
-    --ink-soft:#6B4D2D;
-    --ink-faint:#987145;
-    --line:#f4df8b;
-
-    --social:#4F81A3;
-    --freedom:#DB6F7D;
-    --health:#83A138;
-    --econ:#E1892D;
-    --generosity:#E76B4F;
-    --trust:#3A7B64;
-    --accent:#FFB94F;
-
-    --display:'Manrope', sans-serif;
-    --body:'Inter', sans-serif;
-    --mono:'IBM Plex Mono', monospace;
-    --serif:'Playfair Display', serif;
+  /* Supplementary Styles to enforce specific layout adjustments requested */
+  
+  /* Screen 0 specific centering */
+  #screen-0 { align-items: center; justify-content: center; text-align: center; display: flex; }
+  
+  /* Screen 3: Taller, narrower cards with larger flowers */
+  #screen-3 .compare-side {
+    width: 240px;
+    padding: 40px 20px;
+    background: var(--panel);
+    border: 2px solid var(--panel-line);
+    border-radius: 24px;
+    min-height: 480px; /* Taller height */
+    justify-content: flex-start;
   }
-
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html,body{height:100%;}
-  body{
-    background:radial-gradient(circle at top left, #fff8cf 0%, var(--bg) 48%, #ffe28c 100%);
-    color:var(--ink);
-    font-family:var(--body);
-    overflow-x:hidden;
-    -webkit-font-smoothing:antialiased;
+  #screen-3 .compare-name { margin-top: 16px; margin-bottom: 16px; }
+  #screen-3 .bars-list { margin-top: auto; } /* Pushes bars to bottom */
+  
+  /* Screen 4: Larger detail panel filling bottom space */
+  #screen-4 .left-pane { display: flex; flex-direction: column; height: 100%; }
+  #screen-4 .detail-panel { 
+    flex: 1; /* Fills remaining vertical space */
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    margin-bottom: 24px;
   }
-  ::selection{background:var(--ink); color:var(--bg);}
-  button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
-  select,input{font-family:inherit;}
-
-  .app{min-height:100vh; display:flex; flex-direction:column; padding:12px 12px 20px;}
-
-  .topbar{display:flex; align-items:center; justify-content:space-between; padding:20px 34px 0 34px;}
-  .brand{font-family:var(--mono); font-size:12px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase;}
-  .progress{display:flex; gap:20px; font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; opacity:0; pointer-events:none; transition:opacity .4s ease;}
-  .progress.show{opacity:1; pointer-events:auto;}
-  .progress .step{color:var(--ink-faint); transition:color .3s ease; display:flex; align-items:center; gap:6px; cursor:pointer;}
-  .progress .step .dot{width:5px; height:5px; border-radius:50%; background:var(--ink-faint); transition:all .3s ease;}
-  .progress .step.active{color:var(--ink);}
-  .progress .step.active .dot{background:var(--ink); box-shadow:0 0 0 3px rgba(43,32,21,0.12);}
-  .progress .step.done{color:var(--ink-soft);}
-  .progress .step.done .dot{background:var(--ink-soft);}
-
-  .back-btn{
-    font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase;
-    color:var(--ink-faint); display:flex; align-items:center; gap:6px;
-    opacity:0; pointer-events:none; transition:opacity .3s ease, color .2s ease;
-  }
-  .back-btn.show{opacity:1; pointer-events:auto;}
-  .back-btn:hover{color:var(--ink);}
-
-  main{flex:1; position:relative;}
-  .screen{
-    position:absolute; inset:0; display:flex; flex-direction:column;
-    padding:30px 34px 28px 34px;
-    opacity:0; transform:translateY(12px); pointer-events:none;
-    transition:opacity .5s cubic-bezier(.22,.61,.36,1), transform .5s cubic-bezier(.22,.61,.36,1);
-    border-radius:28px;
-    background:linear-gradient(135deg, rgba(255,255,255,0.94), rgba(255,243,195,0.96));
-    box-shadow:0 18px 44px rgba(47,34,19,0.08);
-    border:1px solid rgba(243,217,125,0.8);
-  }
-  .screen.active{opacity:1; transform:translateY(0); pointer-events:auto; position:relative;}
-
-  .icon-ring{width:28px; height:28px; margin-bottom:14px;}
-  .icon-ring svg{width:100%; height:100%;}
-
-  h1.heading{
-    font-family:var(--display); font-weight:800;
-    font-size:clamp(30px, 3vw, 44px);
-    letter-spacing:-0.02em; line-height:1.05;
-    max-width:11ch;
-  }
-  p.sub{font-family:var(--body); font-size:15.5px; color:var(--ink-soft); line-height:1.7; margin-top:14px; max-width:620px;}
-
-  .cta{
-    font-family:var(--display); font-weight:700; font-size:14px; color:var(--ink);
-    display:inline-flex; align-items:center; gap:9px;
-    padding:13px 20px; border:1.5px solid var(--ink); border-radius:100px;
-    transition:background .25s ease, color .25s ease, transform .2s ease;
-    width:fit-content; margin-top:22px;
-    background:rgba(255,255,255,0.75);
-  }
-  .cta:hover{background:var(--ink); color:var(--bg); transform:translateX(2px);}
-  .cta:disabled{opacity:.35; pointer-events:none;}
-  .cta .arrow{transition:transform .25s ease;}
-  .cta:hover .arrow{transform:translateX(3px);}
-
-  .split{display:flex; gap:40px; flex:1; align-items:center; margin-top:8px; min-height:0;}
-  .left-pane{width:360px; flex-shrink:0; display:flex; flex-direction:column; justify-content:center;}
-  .right-pane{flex:1; min-width:0; display:flex; flex-direction:column; min-height:0; justify-content:center;}
-
-  .field-group{margin-top:20px; display:flex; flex-direction:column; gap:12px;}
-  .field{display:flex; flex-direction:column; gap:6px;}
-  .field label{font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint);}
-  .field select{
-    font-family:var(--body); font-size:13.5px; color:var(--ink);
-    padding:10px 13px; border-radius:10px; border:1px solid var(--panel-line); background:var(--panel);
-  }
-
-  .insight-box, .profile-title, .match-country, .compare-name, .detail-country-name, .detail-default{
-    font-family:var(--display);
-  }
-
-  /* ================= SCREEN 0 : INTRO ================= */
-  .intro-visual{align-items:center; justify-content:center; display:flex; flex-direction:column; gap:24px;}
-  #introFlower{width:min(420px, 92%); height:auto;}
-  .source-note{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); text-align:center; max-width:460px; line-height:1.7;}
-
-  /* ================= SCREEN 1 ================= */
-  #screen-1 .right-pane{flex-direction:row; gap:40px; align-items:flex-start;}
-  .rank-hint{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); margin-bottom:12px; letter-spacing:.03em;}
-  .cards{display:flex; flex-direction:column; gap:10px; width:320px; flex-shrink:0;}
-  .rank-row{display:flex; align-items:center; gap:10px;}
-  .rank-num-outside{
-    font-family:var(--mono); font-size:13px; color:var(--ink-faint); width:16px; text-align:center; flex-shrink:0;
-  }
-  .card{
-    background:var(--panel); border:1px solid var(--panel-line); border-radius:14px;
-    padding:12px 14px; display:flex; align-items:center; gap:11px; cursor:grab;
-    transition:box-shadow .2s ease, border-color .2s ease; user-select:none; flex:1;
-  }
-  .card:active{cursor:grabbing;}
-  .card.dragging{opacity:.35;}
-  .card .swatch{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
-  .card .label{font-family:var(--display); font-weight:700; font-size:13px; flex:1;}
-  .row-controls{display:flex; align-items:center; gap:4px; flex-shrink:0;}
-  .row-controls .updown{display:flex; flex-direction:column; gap:1px;}
-  .row-controls button{font-size:9px; color:var(--ink-faint); line-height:1;}
-  .row-controls button:hover{color:var(--ink);}
-  .row-controls .handle{color:var(--ink-faint); font-size:12px; letter-spacing:2px;}
-  .card:hover{border-color:var(--ink-faint); box-shadow:0 5px 14px rgba(43,32,21,.06);}
-
-  .profile-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:12px; padding-top:4px;}
-  .profile-label{font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); text-align:center;}
-  .profile-title{font-weight:700; font-size:17px; text-align:center;}
-
-  /* ================= SCREEN 2 ================= */
-  .matches-grid{
-    margin-top:4px; display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
-    gap:12px; align-content:start;
-  }
-  .match-card{
-    background:var(--panel); border:1px solid var(--panel-line); border-radius:16px;
-    padding:14px 16px; display:flex; flex-direction:row; align-items:center; gap:12px;
-    cursor:pointer; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; position:relative;
-  }
-  .match-card:hover{transform:translateY(-2px); box-shadow:0 10px 22px rgba(43,32,21,.08); border-color:var(--ink-faint);}
-  .match-card.selected{border-color:var(--ink); box-shadow:0 0 0 2px var(--ink);}
-  .match-flower-wrap{flex-shrink:0; width:74px; height:74px;}
-  .match-text{display:flex; flex-direction:column; gap:2px; min-width:0;}
-  .match-country{font-weight:600; font-size:15px; line-height:1.15;}
-  .match-badge{font-family:var(--mono); font-size:10.5px; color:var(--ink-soft);}
-  .match-score{font-family:var(--mono); font-size:10px; color:var(--ink-faint);}
-
-  /* ================= SCREEN 3 ================= */
-  .rc-toggle{display:flex; gap:7px; flex-wrap:wrap; margin-top:18px;}
-  .toggle-btn{
-    font-family:var(--display); font-weight:600; font-size:12px;
-    padding:8px 15px; border-radius:100px; border:1px solid var(--panel-line); color:var(--ink-soft);
-    transition:all .2s ease; background:var(--panel);
-  }
-  .toggle-btn.active{background:var(--ink); color:var(--bg); border-color:var(--ink);}
-  .toggle-btn:hover:not(.active){border-color:var(--ink-faint); color:var(--ink);}
-  select.country-select{
-    font-family:var(--body); font-size:12.5px; color:var(--ink);
-    padding:8px 13px; border-radius:100px; border:1px solid var(--panel-line); background:var(--panel);
-  }
-
-  .insight-box{margin-top:16px; font-size:15px; font-weight:600; line-height:1.55; color:var(--ink);}
-  .insight-box .hi{padding:1px 6px; border-radius:5px;}
-
-  .compare-grid{display:flex; flex-wrap:nowrap; gap:40px; flex:1; align-items:center; justify-content:center; margin-top:8px;}
-  .compare-side{display:flex; flex-direction:column; align-items:center; gap:10px; width:250px; min-width:0;}
-  .compare-tag{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em;}
-  .compare-name{font-weight:600; font-size:16px;}
-
-  .bars-list{width:100%; display:flex; flex-direction:column; gap:8px; margin-top:4px;}
-  .bar-row{display:flex; align-items:center; gap:7px;}
-  .bar-label{font-family:var(--mono); font-size:9.5px; color:var(--ink-soft); width:58px; flex-shrink:0;}
-  .bar-track{flex:1; height:6px; background:var(--panel-line); border-radius:6px; overflow:hidden;}
-  .bar-fill{height:100%; border-radius:6px; width:0%; transition:width .6s cubic-bezier(.22,.61,.36,1);}
-  .bar-val{font-family:var(--mono); font-size:9.5px; color:var(--ink-faint); width:24px; text-align:right; flex-shrink:0;}
-
-  /* ================= SCREEN 4 ================= */
-  #screen-4 .right-pane{border-left:1px solid var(--panel-line); padding-left:36px;}
-  .legend{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;}
-  .legend-item{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10px; color:var(--ink-soft);}
-  .legend-item .sw{width:8px; height:8px; border-radius:50%;}
-
-  .search-field{margin-top:18px; position:relative;}
-  .search-field input{
-    width:100%; font-family:var(--body); font-size:13px; color:var(--ink);
-    padding:10px 14px; border-radius:100px; border:1px solid var(--panel-line); background:var(--panel);
-  }
-  .search-field input:focus{outline:none; border-color:var(--ink-faint);}
-
-  .detail-panel{
-    margin-top:20px; padding:18px 18px; background:var(--panel); border:1px solid var(--panel-line);
-    border-radius:16px; min-height:190px;
-  }
-  .detail-default{font-weight:600; font-size:14px; line-height:1.5; color:var(--ink-soft);}
-  .detail-default b{color:var(--ink);}
-  .detail-country-name{font-weight:700; font-size:17px; margin-bottom:3px;}
-  .detail-score{font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-bottom:12px;}
-  .detail-back{font-family:var(--mono); font-size:10px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; margin-top:10px; display:inline-block; cursor:pointer;}
-  .detail-back:hover{color:var(--ink);}
-
-  #scatter{width:100%; height:100%; display:block; overflow:visible;}
-  .axis-label{font-family:var(--mono); font-size:10px; fill:var(--ink-faint);}
-  .axis-title{font-family:var(--mono); font-size:10px; fill:var(--ink-soft);}
-  .world-wrap{flex:1; position:relative; min-height:540px;}
-
-  .tooltip{
-    position:absolute; pointer-events:none; background:var(--ink); color:var(--bg);
-    font-family:var(--mono); font-size:10.5px; padding:6px 10px; border-radius:8px;
-    transform:translate(-50%,-130%); opacity:0; transition:opacity .15s ease; white-space:nowrap; z-index:20;
-  }
-  .tooltip.show{opacity:1;}
-
-  @keyframes searchPulse{
-    0%{ r:9; opacity:1; }
-    70%{ r:20; opacity:0; }
-    100%{ r:20; opacity:0; }
-  }
-
-  @media (max-width: 980px){
-    .topbar{padding:18px 20px 0 20px;}
-    .screen{padding:28px 20px 22px 20px;}
-    .split{flex-direction:column; gap:24px;}
-    .left-pane{width:100%;}
-    #screen-1 .right-pane{flex-direction:column;}
-    .cards{width:100%;}
-    #screen-4 .right-pane{border-left:none; padding-left:0; border-top:1px solid var(--panel-line); padding-top:20px;}
-    .compare-grid{flex-wrap:wrap;}
-    .progress{display:none;}
-  }
+  
+  /* Hide progress bar on intro screen */
+  .topbar { position: relative; z-index: 10; }
 </style>
 </head>
 <body>
@@ -258,10 +47,10 @@
   <div class="topbar">
     <div class="brand">What Makes the World Happy</div>
     <div class="progress" id="progress">
-      <div class="step" data-i="0"><span class="dot"></span>01 Define</div>
-      <div class="step" data-i="1"><span class="dot"></span>02 Discover</div>
-      <div class="step" data-i="2"><span class="dot"></span>03 Reality Check</div>
-      <div class="step" data-i="3"><span class="dot"></span>04 World</div>
+      <div class="step" data-i="0">01 Define</div>
+      <div class="step" data-i="1">02 Discover</div>
+      <div class="step" data-i="2">03 Reality Check</div>
+      <div class="step" data-i="3">04 World</div>
     </div>
     <button class="back-btn" id="backBtn">&larr; Back</button>
   </div>
@@ -269,17 +58,13 @@
   <main>
     <!-- SCREEN 0 : INTRO -->
     <section class="screen active" id="screen-0">
-      <div class="split">
-        <div class="left-pane">
-          <div class="icon-ring"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="3" fill="currentColor"/></svg></div>
-          <h1 class="heading">What makes<br>a good life?</h1>
-          <p class="sub">Six factors. 145 countries. A decade of survey data. This is an interactive look at what actually predicts happiness around the world — and how your own priorities compare to it.</p>
-          <button class="cta" id="toScreen1From0">Begin <span class="arrow">&rarr;</span></button>
+      <div class="intro-container">
+        <h1 class="heading">What makes a good life?</h1>
+        <div class="source-note">Source: World Happiness Report 2025, Sustainable Development Solutions Network — Life Evaluation &amp; six-factor data across 145 countries.</div>
+        <div class="intro-visual">
+          <svg id="introSmile" viewBox="0 0 140 140"></svg>
         </div>
-        <div class="right-pane intro-visual">
-          <svg id="introFlower" viewBox="0 0 420 420"></svg>
-          <div class="source-note">Source: World Happiness Report 2025, Sustainable Development Solutions Network — Life Evaluation &amp; six-factor data across 145 countries.</div>
-        </div>
+        <button class="cta" id="toScreen1From0">Begin <span class="arrow">&rarr;</span></button>
       </div>
     </section>
 
@@ -287,21 +72,24 @@
     <section class="screen" id="screen-1">
       <div class="split">
         <div class="left-pane">
-          <div class="icon-ring"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="3" fill="currentColor"/></svg></div>
           <h1 class="heading">What matters most to you?</h1>
           <p class="sub">Rank these six factors from most to least important. Drag to reorder — watch your profile bloom on the right.</p>
-          <button class="cta" id="toScreen2">Find my matches <span class="arrow">&rarr;</span></button>
         </div>
 
         <div class="right-pane">
-          <div class="rank-hint">Most important &darr; &nbsp;/&nbsp; Least important</div>
-          <div class="cards" id="cardList"></div>
-        </div>
+          <div class="profile-col">
+            <div class="profile-label" style="font-family: var(--display); font-weight: 600; font-size: 12px; color: var(--ink-faint); margin-bottom: 8px;">Your happiness profile</div>
+            <svg id="userFlowerPreview" viewBox="0 0 300 300" width="180" height="180"></svg>
+          </div>
+          
+          <div class="rank-content">
+            <div class="cards" id="cardList"></div>
+            <div class="profile-title" id="topValueLabel"></div>
+          </div>
 
-        <div class="profile-col">
-          <div class="profile-label">Your happiness profile</div>
-          <svg id="userFlowerPreview" viewBox="0 0 300 300" width="220" height="220"></svg>
-          <div class="profile-title" id="topValueLabel"></div>
+          <div class="bottom-action-bar">
+            <button class="cta" id="toScreen2">Find my matches <span class="arrow">&rarr;</span></button>
+          </div>
         </div>
       </div>
     </section>
@@ -310,7 +98,6 @@
     <section class="screen" id="screen-2">
       <div class="split">
         <div class="left-pane">
-          <div class="icon-ring"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="3" fill="currentColor"/></svg></div>
           <h1 class="heading">Which countries match your values?</h1>
           <p class="sub">We compared your ranking against real profiles from 145 countries — here's your list of best-fit matches. Tap one to set it as your dream country.</p>
 
@@ -324,11 +111,13 @@
               <select id="dreamCountrySelect"><option value="">Not sure yet — I'll pick from the list</option></select>
             </div>
           </div>
-
-          <button class="cta" id="toScreen3" disabled>Compare with your dream country <span class="arrow">&rarr;</span></button>
         </div>
+        
         <div class="right-pane">
           <div class="matches-grid" id="matchesGrid"></div>
+          <div class="bottom-action-bar">
+            <button class="cta" id="toScreen3" disabled>Compare with your dream country <span class="arrow">&rarr;</span></button>
+          </div>
         </div>
       </div>
     </section>
@@ -337,7 +126,6 @@
     <section class="screen" id="screen-3">
       <div class="split">
         <div class="left-pane">
-          <div class="icon-ring"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="3" fill="currentColor"/></svg></div>
           <h1 class="heading">Does reality match your perception?</h1>
           <p class="sub">Compare your ranked priorities against a country's actual six-factor profile.</p>
 
@@ -346,27 +134,28 @@
             <button class="toggle-btn" data-mode="dream">My dream country</button>
             <button class="toggle-btn" data-mode="other">Choose another</button>
           </div>
-          <select class="country-select" id="otherSelect" style="display:none; margin-top:10px;"></select>
+          <select class="country-select" id="otherSelect" style="display:none; width: 100%;"></select>
 
           <div class="insight-box" id="insightBox"></div>
-
-          <button class="cta" id="toScreen4">Explore the world's happiness <span class="arrow">&rarr;</span></button>
         </div>
 
         <div class="right-pane">
           <div class="compare-grid">
             <div class="compare-side">
-              <div class="compare-tag">You</div>
-              <svg viewBox="0 0 300 300" width="180" height="180" id="userFlowerCompare"></svg>
+              <div class="compare-tag" style="font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--ink-faint); text-transform: uppercase;">You</div>
+              <svg viewBox="0 0 300 300" width="240" height="240" id="userFlowerCompare"></svg>
               <div class="compare-name">Your priorities</div>
               <div class="bars-list" id="userBars"></div>
             </div>
             <div class="compare-side">
-              <div class="compare-tag">Reality</div>
-              <svg viewBox="0 0 300 300" width="180" height="180" id="countryFlowerCompare"></svg>
+              <div class="compare-tag" style="font-family: var(--display); font-weight: 700; font-size: 13px; color: var(--ink-faint); text-transform: uppercase;">Reality</div>
+              <svg viewBox="0 0 300 300" width="240" height="240" id="countryFlowerCompare"></svg>
               <div class="compare-name" id="compareCountryName">—</div>
               <div class="bars-list" id="countryBars"></div>
             </div>
+          </div>
+          <div class="bottom-action-bar">
+            <button class="cta" id="toScreen4">Explore the world's happiness <span class="arrow">&rarr;</span></button>
           </div>
         </div>
       </div>
@@ -376,16 +165,18 @@
     <section class="screen" id="screen-4">
       <div class="split">
         <div class="left-pane">
-          <div class="icon-ring"><svg viewBox="0 0 30 30"><circle cx="15" cy="15" r="13" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="3" fill="currentColor"/></svg></div>
           <h1 class="heading">Is there one recipe for happiness?</h1>
           <p class="sub">Similar happiness scores can come from very different combinations of factors. Click any country to see it bloom.</p>
+          
           <div class="legend" id="legend"></div>
+          
           <div class="search-field">
             <input type="text" id="countrySearch" placeholder="Search a country…" list="countryDatalist" autocomplete="off">
             <datalist id="countryDatalist"></datalist>
           </div>
+          
           <div class="detail-panel" id="detailPanel">
-            <div class="detail-default" id="detailDefault">There is no single recipe for happiness. <b>Countries reach similar life evaluation scores through very different combinations of factors.</b></div>
+            <div class="detail-default" id="detailDefault">There is no single recipe for happiness. <br><br><b>Countries reach similar life evaluation scores through very different combinations of factors.</b></div>
           </div>
         </div>
         <div class="right-pane">
@@ -400,15 +191,15 @@
 </div>
 
 <script>
-const RAW = [{"country":"Finland","rank":1,"life":7.764,"lo":7.69,"hi":7.837,"gdp":1.915,"social":1.638,"health":0.939,"freedom":1.105,"generosity":0.093,"trust":0.491,"dysres":1.582},{"country":"Iceland","rank":2,"life":7.54,"lo":7.449,"hi":7.63,"gdp":1.971,"social":1.72,"health":0.996,"freedom":1.105,"generosity":0.187,"trust":0.187,"dysres":1.373},{"country":"Denmark","rank":3,"life":7.539,"lo":7.446,"hi":7.631,"gdp":1.986,"social":1.633,"health":0.93,"freedom":1.081,"generosity":0.125,"trust":0.474,"dysres":1.31},{"country":"Costa Rica","rank":4,"life":7.439,"lo":7.356,"hi":7.522,"gdp":1.697,"social":1.483,"health":0.739,"freedom":1.101,"generosity":0.059,"trust":0.122,"dysres":2.236},{"country":"Sweden","rank":5,"life":7.255,"lo":7.172,"hi":7.337,"gdp":1.95,"social":1.57,"health":1.027,"freedom":1.07,"generosity":0.149,"trust":0.447,"dysres":1.041},{"country":"Norway","rank":6,"life":7.242,"lo":7.156,"hi":7.327,"gdp":2.057,"social":1.626,"health":0.983,"freedom":1.092,"generosity":0.157,"trust":0.413,"dysres":0.913},{"country":"Netherlands","rank":7,"life":7.223,"lo":7.153,"hi":7.293,"gdp":1.983,"social":1.539,"health":0.922,"freedom":1.0,"generosity":0.175,"trust":0.349,"dysres":1.255},{"country":"Israel","rank":8,"life":7.187,"lo":7.119,"hi":7.254,"gdp":1.867,"social":1.606,"health":0.925,"freedom":0.863,"generosity":0.139,"trust":0.196,"dysres":1.592},{"country":"Luxembourg","rank":9,"life":7.063,"lo":6.971,"hi":7.154,"gdp":2.162,"social":1.465,"health":0.981,"freedom":1.056,"generosity":0.111,"trust":0.382,"dysres":0.907},{"country":"Switzerland","rank":10,"life":7.018,"lo":6.937,"hi":7.099,"gdp":2.028,"social":1.534,"health":1.017,"freedom":1.035,"generosity":0.148,"trust":0.452,"dysres":0.804},{"country":"New Zealand","rank":11,"life":6.995,"lo":6.915,"hi":7.074,"gdp":1.876,"social":1.58,"health":0.924,"freedom":1.034,"generosity":0.155,"trust":0.422,"dysres":1.003},{"country":"Mexico","rank":12,"life":6.972,"lo":6.885,"hi":7.06,"gdp":1.636,"social":1.366,"health":0.631,"freedom":1.015,"generosity":0.056,"trust":0.128,"dysres":2.141},{"country":"Ireland","rank":13,"life":6.928,"lo":6.839,"hi":7.018,"gdp":2.146,"social":1.558,"health":0.936,"freedom":1.032,"generosity":0.172,"trust":0.364,"dysres":0.72},{"country":"Belgium","rank":14,"life":6.926,"lo":6.859,"hi":6.993,"gdp":1.951,"social":1.52,"health":0.988,"freedom":0.99,"generosity":0.107,"trust":0.296,"dysres":1.074},{"country":"Australia","rank":15,"life":6.916,"lo":6.833,"hi":6.999,"gdp":1.937,"social":1.497,"health":0.956,"freedom":0.989,"generosity":0.159,"trust":0.294,"dysres":1.085},{"country":"Kosovo","rank":16,"life":6.91,"lo":6.81,"hi":7.01,"gdp":1.535,"social":1.293,"health":0.907,"freedom":1.045,"generosity":0.186,"trust":0.082,"dysres":1.86},{"country":"Germany","rank":17,"life":6.882,"lo":6.789,"hi":6.975,"gdp":1.948,"social":1.49,"health":0.876,"freedom":0.948,"generosity":0.145,"trust":0.349,"dysres":1.128},{"country":"Slovenia","rank":18,"life":6.868,"lo":6.783,"hi":6.954,"gdp":1.872,"social":1.594,"health":0.913,"freedom":1.097,"generosity":0.108,"trust":0.108,"dysres":1.177},{"country":"Austria","rank":19,"life":6.845,"lo":6.764,"hi":6.927,"gdp":1.954,"social":1.474,"health":0.926,"freedom":0.979,"generosity":0.171,"trust":0.285,"dysres":1.057},{"country":"Czechia","rank":20,"life":6.821,"lo":6.739,"hi":6.903,"gdp":1.869,"social":1.594,"health":0.72,"freedom":1.045,"generosity":0.106,"trust":0.081,"dysres":1.405},{"country":"United Arab Emirates","rank":21,"life":6.821,"lo":6.734,"hi":6.907,"gdp":1.98,"social":1.096,"health":0.71,"freedom":1.071,"generosity":0.149,"trust":0.228,"dysres":1.587},{"country":"Saudi Arabia","rank":22,"life":6.817,"lo":6.726,"hi":6.907,"gdp":1.949,"social":1.412,"health":0.831,"freedom":1.042,"generosity":0.096,"trust":0.196,"dysres":1.291},{"country":"United States","rank":23,"life":6.816,"lo":6.724,"hi":6.908,"gdp":2.002,"social":1.516,"health":0.678,"freedom":0.776,"generosity":0.155,"trust":0.155,"dysres":1.534},{"country":"Poland","rank":24,"life":6.768,"lo":6.706,"hi":6.83,"gdp":1.851,"social":1.479,"health":0.693,"freedom":0.945,"generosity":0.023,"trust":0.177,"dysres":1.6},{"country":"Canada","rank":25,"life":6.741,"lo":6.656,"hi":6.826,"gdp":1.917,"social":1.525,"health":0.955,"freedom":0.948,"generosity":0.153,"trust":0.321,"dysres":0.923},{"country":"Taiwan Province of China","rank":26,"life":6.714,"lo":6.628,"hi":6.8,"gdp":1.959,"social":1.446,"health":0.933,"freedom":0.879,"generosity":0.107,"trust":0.179,"dysres":1.211},{"country":"Belize","rank":27,"life":6.711,"lo":6.432,"hi":6.989,"gdp":1.471,"social":1.42,"health":0.609,"freedom":1.146,"generosity":0.07,"trust":0.08,"dysres":1.913},{"country":"Lithuania","rank":28,"life":6.704,"lo":6.606,"hi":6.801,"gdp":1.863,"social":1.555,"health":0.653,"freedom":0.891,"generosity":0.049,"trust":0.113,"dysres":1.579},{"country":"United Kingdom","rank":29,"life":6.694,"lo":6.613,"hi":6.776,"gdp":1.896,"social":1.458,"health":0.888,"freedom":0.962,"generosity":0.191,"trust":0.291,"dysres":1.008},{"country":"Serbia","rank":30,"life":6.691,"lo":6.607,"hi":6.775,"gdp":1.696,"social":1.543,"health":0.58,"freedom":0.913,"generosity":0.124,"trust":0.096,"dysres":1.74},{"country":"Uruguay","rank":31,"life":6.635,"lo":6.553,"hi":6.717,"gdp":1.748,"social":1.54,"health":0.525,"freedom":1.054,"generosity":0.07,"trust":0.194,"dysres":1.505},{"country":"Brazil","rank":32,"life":6.634,"lo":6.54,"hi":6.728,"gdp":1.602,"social":1.396,"health":0.508,"freedom":0.964,"generosity":0.081,"trust":0.122,"dysres":1.96},{"country":"Kazakhstan","rank":33,"life":6.633,"lo":6.555,"hi":6.711,"gdp":1.782,"social":1.599,"health":0.552,"freedom":0.982,"generosity":0.117,"trust":0.104,"dysres":1.496},{"country":"Romania","rank":34,"life":6.629,"lo":6.542,"hi":6.715,"gdp":1.818,"social":1.233,"health":0.608,"freedom":0.965,"generosity":0.03,"trust":0.034,"dysres":1.941},{"country":"France","rank":35,"life":6.586,"lo":6.51,"hi":6.662,"gdp":1.907,"social":1.435,"health":0.95,"freedom":0.83,"generosity":0.09,"trust":0.24,"dysres":1.133},{"country":"Singapore","rank":36,"life":6.585,"lo":6.497,"hi":6.674,"gdp":2.167,"social":1.471,"health":1.059,"freedom":0.98,"generosity":0.145,"trust":0.512,"dysres":0.252},{"country":"El Salvador","rank":37,"life":6.578,"lo":6.461,"hi":6.694,"gdp":1.448,"social":1.086,"health":0.633,"freedom":1.089,"generosity":0.047,"trust":0.289,"dysres":1.987},{"country":"Italy","rank":38,"life":6.574,"lo":6.471,"hi":6.678,"gdp":1.899,"social":1.405,"health":0.975,"freedom":0.746,"generosity":0.075,"trust":0.067,"dysres":1.407},{"country":"Panama","rank":39,"life":6.547,"lo":6.432,"hi":6.661,"gdp":1.787,"social":1.479,"health":0.818,"freedom":0.975,"generosity":0.039,"trust":0.042,"dysres":1.407},{"country":"Kuwait","rank":40,"life":6.543,"lo":6.432,"hi":6.655,"gdp":1.862,"social":1.316,"health":0.88,"freedom":1.031,"generosity":0.11,"trust":0.167,"dysres":1.177},{"country":"Spain","rank":41,"life":6.54,"lo":6.459,"hi":6.62,"gdp":1.871,"social":1.552,"health":1.036,"freedom":0.857,"generosity":0.112,"trust":0.167,"dysres":0.946},{"country":"Guatemala","rank":42,"life":6.533,"lo":6.39,"hi":6.676,"gdp":1.472,"social":1.175,"health":0.38,"freedom":1.034,"generosity":0.076,"trust":0.094,"dysres":2.304},{"country":"Malta","rank":43,"life":6.436,"lo":6.357,"hi":6.516,"gdp":1.942,"social":1.532,"health":0.948,"freedom":0.977,"generosity":0.183,"trust":0.12,"dysres":0.735},{"country":"Argentina","rank":44,"life":6.43,"lo":6.337,"hi":6.522,"gdp":1.7,"social":1.517,"health":0.621,"freedom":0.97,"generosity":0.052,"trust":0.076,"dysres":1.493},{"country":"Viet Nam","rank":45,"life":6.428,"lo":6.353,"hi":6.504,"gdp":1.51,"social":1.375,"health":0.698,"freedom":1.147,"generosity":0.039,"trust":0.207,"dysres":1.453},{"country":"Estonia","rank":46,"life":6.41,"lo":6.33,"hi":6.49,"gdp":1.824,"social":1.604,"health":0.692,"freedom":0.99,"generosity":0.105,"trust":0.353,"dysres":0.842},{"country":"Bosnia and Herzegovina","rank":47,"life":6.381,"lo":6.283,"hi":6.478,"gdp":1.616,"social":1.425,"health":0.678,"freedom":0.874,"generosity":0.152,"trust":0.024,"dysres":1.612},{"country":"Latvia","rank":48,"life":6.365,"lo":6.277,"hi":6.454,"gdp":1.797,"social":1.61,"health":0.512,"freedom":0.94,"generosity":0.103,"trust":0.097,"dysres":1.305},{"country":"Jamaica","rank":49,"life":6.305,"lo":5.994,"hi":6.615,"gdp":1.445,"social":1.554,"health":0.371,"freedom":0.966,"generosity":0.059,"trust":0.082,"dysres":1.827},{"country":"Chile","rank":50,"life":6.302,"lo":6.212,"hi":6.393,"gdp":1.73,"social":1.427,"health":0.792,"freedom":0.926,"generosity":0.087,"trust":0.087,"dysres":1.254},{"country":"Nicaragua","rank":51,"life":6.301,"lo":6.127,"hi":6.475,"gdp":1.32,"social":1.349,"health":0.74,"freedom":1.03,"generosity":0.097,"trust":0.278,"dysres":1.487},{"country":"Thailand","rank":52,"life":6.296,"lo":6.187,"hi":6.405,"gdp":1.632,"social":1.424,"health":0.694,"freedom":1.087,"generosity":0.195,"trust":0.029,"dysres":1.234},{"country":"Uzbekistan","rank":53,"life":6.283,"lo":6.18,"hi":6.386,"gdp":1.415,"social":1.527,"health":0.771,"freedom":1.085,"generosity":0.173,"trust":0.196,"dysres":1.116},{"country":"Slovakia","rank":54,"life":6.255,"lo":6.189,"hi":6.321,"gdp":1.815,"social":1.63,"health":0.564,"freedom":0.847,"generosity":0.056,"trust":0.065,"dysres":1.278},{"country":"Bahrain","rank":55,"life":6.254,"lo":6.143,"hi":6.364,"gdp":1.93,"social":1.293,"health":0.693,"freedom":1.055,"generosity":0.143,"trust":0.171,"dysres":0.969},{"country":"Philippines","rank":56,"life":6.206,"lo":6.097,"hi":6.315,"gdp":1.413,"social":1.285,"health":0.286,"freedom":1.085,"generosity":0.088,"trust":0.095,"dysres":1.953},{"country":"Paraguay","rank":57,"life":6.198,"lo":6.091,"hi":6.306,"gdp":1.547,"social":1.529,"health":0.209,"freedom":1.039,"generosity":0.097,"trust":0.058,"dysres":1.719},{"country":"Oman","rank":58,"life":6.197,"lo":5.973,"hi":6.42,"gdp":1.789,"social":1.286,"health":0.58,"freedom":1.057,"generosity":0.132,"trust":0.188,"dysres":1.164},{"country":"Ecuador","rank":59,"life":6.144,"lo":6.027,"hi":6.261,"gdp":1.505,"social":1.168,"health":0.835,"freedom":0.86,"generosity":0.058,"trust":0.085,"dysres":1.634},{"country":"Montenegro","rank":60,"life":6.139,"lo":6.057,"hi":6.222,"gdp":1.709,"social":1.485,"health":0.68,"freedom":0.935,"generosity":0.073,"trust":0.142,"dysres":1.115},{"country":"Japan","rank":61,"life":6.13,"lo":6.048,"hi":6.211,"gdp":1.858,"social":1.414,"health":1.041,"freedom":0.875,"generosity":0.019,"trust":0.202,"dysres":0.722},{"country":"Cyprus","rank":62,"life":6.126,"lo":6.013,"hi":6.24,"gdp":1.892,"social":1.215,"health":0.953,"freedom":0.794,"generosity":0.086,"trust":0.07,"dysres":1.116},{"country":"Honduras","rank":63,"life":6.096,"lo":5.954,"hi":6.237,"gdp":1.277,"social":1.083,"health":0.466,"freedom":0.999,"generosity":0.122,"trust":0.081,"dysres":2.067},{"country":"Dominican Republic","rank":64,"life":6.093,"lo":5.957,"hi":6.23,"gdp":1.664,"social":1.406,"health":0.702,"freedom":1.015,"generosity":0.061,"trust":0.188,"dysres":1.057},{"country":"China","rank":65,"life":6.074,"lo":5.998,"hi":6.15,"gdp":1.662,"social":0.963,"health":0.905,"freedom":0.793,"generosity":0.089,"trust":0.161,"dysres":1.502},{"country":"Kyrgyzstan","rank":66,"life":6.049,"lo":5.976,"hi":6.121,"gdp":1.296,"social":1.565,"health":0.759,"freedom":1.108,"generosity":0.142,"trust":0.102,"dysres":1.077},{"country":"Republic of Korea","rank":67,"life":6.04,"lo":5.945,"hi":6.134,"gdp":1.906,"social":1.23,"health":1.028,"freedom":0.825,"generosity":0.089,"trust":0.149,"dysres":0.812},{"country":"Colombia","rank":68,"life":6.04,"lo":5.933,"hi":6.146,"gdp":1.586,"social":1.374,"health":0.63,"freedom":0.915,"generosity":0.042,"trust":0.051,"dysres":1.441},{"country":"Portugal","rank":69,"life":6.029,"lo":5.928,"hi":6.131,"gdp":1.83,"social":1.461,"health":0.944,"freedom":1.005,"generosity":0.035,"trust":0.031,"dysres":0.724},{"country":"Croatia","rank":70,"life":6.009,"lo":5.928,"hi":6.09,"gdp":1.834,"social":1.562,"health":0.737,"freedom":0.675,"generosity":0.022,"trust":0.095,"dysres":1.084},{"country":"Malaysia","rank":71,"life":6.005,"lo":5.901,"hi":6.11,"gdp":1.766,"social":1.17,"health":0.413,"freedom":1.109,"generosity":0.161,"trust":0.112,"dysres":1.275},{"country":"Peru","rank":72,"life":5.974,"lo":5.872,"hi":6.076,"gdp":1.535,"social":1.24,"health":0.605,"freedom":0.849,"generosity":0.055,"trust":0.01,"dysres":1.68},{"country":"Mauritius","rank":73,"life":5.939,"lo":5.814,"hi":6.064,"gdp":1.707,"social":1.384,"health":0.704,"freedom":0.926,"generosity":0.092,"trust":0.127,"dysres":0.999},{"country":"Hungary","rank":74,"life":5.937,"lo":5.829,"hi":6.044,"gdp":1.819,"social":1.625,"health":0.633,"freedom":0.785,"generosity":0.103,"trust":0.056,"dysres":0.916},{"country":"Mongolia","rank":75,"life":5.936,"lo":5.852,"hi":6.02,"gdp":1.558,"social":1.615,"health":0.421,"freedom":0.752,"generosity":0.162,"trust":0.051,"dysres":1.376},{"country":"Trinidad and Tobago","rank":76,"life":5.905,"lo":5.651,"hi":6.159,"gdp":1.748,"social":1.413,"health":0.49,"freedom":0.884,"generosity":0.109,"trust":0.0,"dysres":1.262},{"country":"Republic of Moldova","rank":77,"life":5.851,"lo":5.741,"hi":5.961,"gdp":1.55,"social":1.277,"health":0.409,"freedom":0.981,"generosity":0.053,"trust":0.037,"dysres":1.544},{"country":"Bolivia","rank":78,"life":5.835,"lo":5.727,"hi":5.943,"gdp":1.442,"social":1.2,"health":0.36,"freedom":0.909,"generosity":0.059,"trust":0.038,"dysres":1.827},{"country":"Russian Federation","rank":79,"life":5.834,"lo":5.735,"hi":5.932,"gdp":1.821,"social":1.331,"health":0.505,"freedom":0.809,"generosity":0.112,"trust":0.133,"dysres":1.122},{"country":"Venezuela","rank":80,"life":5.756,"lo":5.646,"hi":5.866,"gdp":0.0,"social":1.335,"health":0.561,"freedom":0.846,"generosity":0.18,"trust":0.133,"dysres":2.701},{"country":"Libya","rank":81,"life":5.731,"lo":5.65,"hi":5.811,"gdp":1.48,"social":1.136,"health":0.619,"freedom":0.865,"generosity":0.099,"trust":0.245,"dysres":1.286},{"country":"North Macedonia","rank":82,"life":5.719,"lo":5.629,"hi":5.809,"gdp":1.665,"social":1.448,"health":0.581,"freedom":0.74,"generosity":0.124,"trust":0.013,"dysres":1.149},{"country":"Algeria","rank":83,"life":5.714,"lo":5.587,"hi":5.841,"gdp":1.535,"social":1.275,"health":0.964,"freedom":0.933,"generosity":0.057,"trust":0.113,"dysres":0.837},{"country":"Bulgaria","rank":84,"life":5.703,"lo":5.611,"hi":5.796,"gdp":1.768,"social":1.587,"health":0.47,"freedom":0.881,"generosity":0.059,"trust":0.003,"dysres":0.935},{"country":"Greece","rank":85,"life":5.697,"lo":5.584,"hi":5.81,"gdp":1.795,"social":1.257,"health":0.799,"freedom":0.478,"generosity":0.023,"trust":0.064,"dysres":1.282},{"country":"Albania","rank":86,"life":5.662,"lo":5.543,"hi":5.782,"gdp":1.631,"social":1.026,"health":0.782,"freedom":1.014,"generosity":0.106,"trust":0.06,"dysres":1.043},{"country":"Indonesia","rank":87,"life":5.617,"lo":5.517,"hi":5.718,"gdp":1.512,"social":1.229,"health":0.485,"freedom":1.043,"generosity":0.295,"trust":0.033,"dysres":1.02},{"country":"Armenia","rank":89,"life":5.584,"lo":5.485,"hi":5.683,"gdp":1.608,"social":1.225,"health":1.05,"freedom":0.914,"generosity":0.026,"trust":0.152,"dysres":0.608},{"country":"Hong Kong SAR of China","rank":90,"life":5.569,"lo":5.49,"hi":5.648,"gdp":1.96,"social":1.33,"health":1.238,"freedom":0.852,"generosity":0.09,"trust":0.395,"dysres":-0.295},{"country":"Georgia","rank":91,"life":5.517,"lo":5.42,"hi":5.614,"gdp":1.669,"social":1.201,"health":0.5,"freedom":0.988,"generosity":0.0,"trust":0.161,"dysres":0.998},{"country":"Lao PDR","rank":92,"life":5.515,"lo":5.39,"hi":5.641,"gdp":1.357,"social":0.866,"health":0.554,"freedom":1.065,"generosity":0.134,"trust":0.174,"dysres":1.366},{"country":"Mozambique","rank":93,"life":5.336,"lo":5.147,"hi":5.525,"gdp":0.839,"social":1.018,"health":0.126,"freedom":0.888,"generosity":0.116,"trust":0.165,"dysres":2.182},{"country":"T\u00fcrkiye","rank":94,"life":5.3,"lo":5.222,"hi":5.379,"gdp":1.785,"social":1.313,"health":0.692,"freedom":0.363,"generosity":0.046,"trust":0.099,"dysres":1.002},{"country":"Iraq","rank":95,"life":5.212,"lo":5.103,"hi":5.321,"gdp":1.477,"social":1.127,"health":0.704,"freedom":0.615,"generosity":0.087,"trust":0.084,"dysres":1.117},{"country":"Gabon","rank":96,"life":5.167,"lo":5.03,"hi":5.304,"gdp":1.591,"social":1.003,"health":0.45,"freedom":0.829,"generosity":0.043,"trust":0.092,"dysres":1.159},{"country":"Iran","rank":97,"life":5.151,"lo":5.029,"hi":5.274,"gdp":1.565,"social":1.249,"health":0.693,"freedom":0.599,"generosity":0.189,"trust":0.124,"dysres":0.733},{"country":"C\u00f4te d\u2019Ivoire","rank":98,"life":5.148,"lo":5.018,"hi":5.277,"gdp":1.285,"social":0.694,"health":0.45,"freedom":0.84,"generosity":0.1,"trust":0.176,"dysres":1.604},{"country":"Nepal","rank":99,"life":5.147,"lo":5.03,"hi":5.264,"gdp":1.2,"social":1.099,"health":0.508,"freedom":0.887,"generosity":0.117,"trust":0.075,"dysres":1.26},{"country":"Cameroon","rank":100,"life":5.083,"lo":4.956,"hi":5.21,"gdp":1.191,"social":0.9,"health":0.348,"freedom":0.821,"generosity":0.094,"trust":0.055,"dysres":1.675},{"country":"South Africa","rank":101,"life":5.009,"lo":4.885,"hi":5.132,"gdp":1.494,"social":1.285,"health":0.101,"freedom":0.825,"generosity":0.064,"trust":0.064,"dysres":1.176},{"country":"Azerbaijan","rank":102,"life":4.993,"lo":4.913,"hi":5.072,"gdp":1.636,"social":0.979,"health":0.847,"freedom":0.935,"generosity":0.058,"trust":0.198,"dysres":0.34},{"country":"Niger","rank":103,"life":4.94,"lo":4.79,"hi":5.09,"gdp":0.89,"social":0.651,"health":0.3,"freedom":0.9,"generosity":0.121,"trust":0.115,"dysres":1.964},{"country":"Pakistan","rank":104,"life":4.868,"lo":4.737,"hi":4.999,"gdp":1.224,"social":0.556,"health":0.489,"freedom":0.564,"generosity":0.144,"trust":0.071,"dysres":1.819},{"country":"Tunisia","rank":105,"life":4.798,"lo":4.714,"hi":4.883,"gdp":1.475,"social":1.043,"health":0.442,"freedom":0.652,"generosity":0.038,"trust":0.071,"dysres":1.078},{"country":"Nigeria","rank":106,"life":4.788,"lo":4.665,"hi":4.911,"gdp":1.335,"social":1.083,"health":0.462,"freedom":0.735,"generosity":0.151,"trust":0.036,"dysres":0.986},{"country":"Senegal","rank":107,"life":4.787,"lo":4.673,"hi":4.9,"gdp":1.164,"social":0.882,"health":0.48,"freedom":0.922,"generosity":0.114,"trust":0.113,"dysres":1.111},{"country":"Namibia","rank":108,"life":4.781,"lo":4.679,"hi":4.882,"gdp":1.41,"social":1.411,"health":0.038,"freedom":0.67,"generosity":0.048,"trust":0.058,"dysres":1.145},{"country":"Kenya","rank":110,"life":4.674,"lo":4.543,"hi":4.804,"gdp":1.242,"social":0.879,"health":0.518,"freedom":0.798,"generosity":0.207,"trust":0.093,"dysres":0.936},{"country":"Ukraine","rank":111,"life":4.658,"lo":4.549,"hi":4.767,"gdp":1.547,"social":1.303,"health":0.498,"freedom":0.722,"generosity":0.222,"trust":0.008,"dysres":0.358},{"country":"Morocco","rank":112,"life":4.646,"lo":4.532,"hi":4.759,"gdp":1.376,"social":0.401,"health":0.674,"freedom":0.844,"generosity":0.035,"trust":0.086,"dysres":1.229},{"country":"Guinea","rank":113,"life":4.609,"lo":4.467,"hi":4.751,"gdp":1.132,"social":0.622,"health":0.364,"freedom":0.866,"generosity":0.141,"trust":0.102,"dysres":1.381},{"country":"Mali","rank":114,"life":4.588,"lo":4.471,"hi":4.705,"gdp":1.036,"social":0.779,"health":0.381,"freedom":0.904,"generosity":0.078,"trust":0.105,"dysres":1.305},{"country":"Ghana","rank":115,"life":4.554,"lo":4.457,"hi":4.65,"gdp":1.297,"social":0.961,"health":0.507,"freedom":0.932,"generosity":0.123,"trust":0.035,"dysres":0.699},{"country":"India","rank":116,"life":4.536,"lo":4.47,"hi":4.601,"gdp":1.397,"social":0.732,"health":0.298,"freedom":1.015,"generosity":0.121,"trust":0.124,"dysres":0.848},{"country":"Somalia","rank":117,"life":4.508,"lo":4.393,"hi":4.624,"gdp":0.818,"social":0.791,"health":0.035,"freedom":0.928,"generosity":0.155,"trust":0.218,"dysres":1.562},{"country":"Uganda","rank":118,"life":4.491,"lo":4.373,"hi":4.61,"gdp":1.032,"social":1.181,"health":0.449,"freedom":0.924,"generosity":0.14,"trust":0.043,"dysres":0.722},{"country":"Jordan","rank":119,"life":4.478,"lo":4.354,"hi":4.602,"gdp":1.388,"social":1.055,"health":0.606,"freedom":0.853,"generosity":0.053,"trust":0.174,"dysres":0.348},{"country":"Mauritania","rank":120,"life":4.473,"lo":4.359,"hi":4.587,"gdp":1.272,"social":0.787,"health":0.593,"freedom":0.593,"generosity":0.109,"trust":0.188,"dysres":0.931},{"country":"Cambodia","rank":121,"life":4.462,"lo":4.354,"hi":4.569,"gdp":1.295,"social":1.075,"health":0.531,"freedom":1.123,"generosity":0.148,"trust":0.088,"dysres":0.201},{"country":"Congo","rank":122,"life":4.456,"lo":4.294,"hi":4.617,"gdp":1.259,"social":0.554,"health":0.391,"freedom":0.751,"generosity":0.074,"trust":0.123,"dysres":1.304},{"country":"Burkina Faso","rank":123,"life":4.455,"lo":4.354,"hi":4.557,"gdp":0.995,"social":0.63,"health":0.343,"freedom":0.82,"generosity":0.135,"trust":0.253,"dysres":1.28},{"country":"Benin","rank":124,"life":4.393,"lo":4.262,"hi":4.525,"gdp":1.122,"social":0.087,"health":0.409,"freedom":0.816,"generosity":0.086,"trust":0.243,"dysres":1.63},{"country":"Chad","rank":125,"life":4.385,"lo":4.252,"hi":4.518,"gdp":0.979,"social":0.676,"health":0.292,"freedom":0.571,"generosity":0.151,"trust":0.116,"dysres":1.6},{"country":"Lesotho","rank":126,"life":4.375,"lo":4.17,"hi":4.579,"gdp":1.007,"social":1.135,"health":0.0,"freedom":0.741,"generosity":0.057,"trust":0.069,"dysres":1.365},{"country":"Bangladesh","rank":127,"life":4.319,"lo":4.197,"hi":4.442,"gdp":1.353,"social":0.245,"health":0.672,"freedom":1.078,"generosity":0.111,"trust":0.087,"dysres":0.774},{"country":"Gambia","rank":128,"life":4.306,"lo":4.21,"hi":4.403,"gdp":1.05,"social":0.853,"health":0.393,"freedom":0.807,"generosity":0.223,"trust":0.042,"dysres":0.938},{"country":"Myanmar","rank":129,"life":4.287,"lo":4.144,"hi":4.43,"gdp":1.211,"social":0.977,"health":0.488,"freedom":0.722,"generosity":0.292,"trust":0.16,"dysres":0.436},{"country":"Liberia","rank":130,"life":4.28,"lo":4.116,"hi":4.444,"gdp":0.867,"social":0.815,"health":0.386,"freedom":0.796,"generosity":0.125,"trust":0.066,"dysres":1.225},{"country":"Togo","rank":131,"life":4.277,"lo":4.17,"hi":4.384,"gdp":1.039,"social":0.572,"health":0.442,"freedom":0.682,"generosity":0.085,"trust":0.144,"dysres":1.314},{"country":"Madagascar","rank":132,"life":4.174,"lo":4.062,"hi":4.287,"gdp":0.867,"social":0.71,"health":0.393,"freedom":0.38,"generosity":0.118,"trust":0.116,"dysres":1.59},{"country":"Zambia","rank":133,"life":4.106,"lo":3.954,"hi":4.259,"gdp":1.109,"social":0.861,"health":0.25,"freedom":0.991,"generosity":0.139,"trust":0.101,"dysres":0.654},{"country":"Sri Lanka","rank":134,"life":4.013,"lo":3.898,"hi":4.127,"gdp":1.496,"social":1.13,"health":0.567,"freedom":0.872,"generosity":0.111,"trust":0.059,"dysres":-0.222},{"country":"Ethiopia","rank":135,"life":3.985,"lo":3.879,"hi":4.091,"gdp":1.033,"social":0.854,"health":0.453,"freedom":0.653,"generosity":0.144,"trust":0.097,"dysres":0.753},{"country":"Comoros","rank":136,"life":3.925,"lo":3.752,"hi":4.097,"gdp":1.089,"social":0.352,"health":0.468,"freedom":0.373,"generosity":0.118,"trust":0.172,"dysres":1.352},{"country":"Eswatini","rank":137,"life":3.909,"lo":3.752,"hi":4.066,"gdp":1.41,"social":1.036,"health":0.044,"freedom":0.579,"generosity":0.055,"trust":0.137,"dysres":0.647},{"country":"Tanzania","rank":138,"life":3.902,"lo":3.763,"hi":4.041,"gdp":1.108,"social":0.778,"health":0.459,"freedom":1.006,"generosity":0.145,"trust":0.251,"dysres":0.155},{"country":"Egypt","rank":139,"life":3.862,"lo":3.765,"hi":3.958,"gdp":1.558,"social":0.862,"health":0.521,"freedom":0.727,"generosity":0.022,"trust":0.097,"dysres":0.074},{"country":"DR Congo","rank":140,"life":3.761,"lo":3.609,"hi":3.914,"gdp":0.857,"social":0.792,"health":0.321,"freedom":0.72,"generosity":0.146,"trust":0.066,"dysres":0.86},{"country":"Lebanon","rank":141,"life":3.723,"lo":3.635,"hi":3.811,"gdp":1.428,"social":1.05,"health":0.416,"freedom":0.434,"generosity":0.074,"trust":0.057,"dysres":0.265},{"country":"Yemen","rank":142,"life":3.532,"lo":3.306,"hi":3.758,"gdp":0.692,"social":1.292,"health":0.431,"freedom":0.549,"generosity":0.084,"trust":0.109,"dysres":0.374},{"country":"Botswana","rank":143,"life":3.464,"lo":3.335,"hi":3.593,"gdp":1.582,"social":0.989,"health":0.017,"freedom":0.86,"generosity":0.022,"trust":0.093,"dysres":-0.099},{"country":"Zimbabwe","rank":144,"life":3.346,"lo":3.244,"hi":3.449,"gdp":1.213,"social":0.782,"health":0.189,"freedom":0.729,"generosity":0.056,"trust":0.128,"dysres":0.251},{"country":"Malawi","rank":145,"life":3.284,"lo":3.153,"hi":3.415,"gdp":0.864,"social":0.326,"health":0.299,"freedom":0.812,"generosity":0.109,"trust":0.143,"dysres":0.73},{"country":"Sierra Leone","rank":146,"life":3.251,"lo":3.147,"hi":3.355,"gdp":1.054,"social":0.692,"health":0.405,"freedom":0.8,"generosity":0.131,"trust":0.052,"dysres":0.117},{"country":"Afghanistan","rank":147,"life":1.446,"lo":1.348,"hi":1.544,"gdp":0.921,"social":0.0,"health":0.176,"freedom":0.0,"generosity":0.079,"trust":0.131,"dysres":0.139}];
+const RAW = [{"country":"Finland","rank":1,"life":7.764,"lo":7.69,"hi":7.837,"gdp":1.915,"social":1.638,"health":0.939,"freedom":1.105,"generosity":0.093,"trust":0.491,"dysres":1.582},{"country":"Iceland","rank":2,"life":7.54,"lo":7.449,"hi":7.63,"gdp":1.971,"social":1.72,"health":0.996,"freedom":1.105,"generosity":0.187,"trust":0.187,"dysres":1.373},{"country":"Denmark","rank":3,"life":7.539,"lo":7.446,"hi":7.631,"gdp":1.986,"social":1.633,"health":0.93,"freedom":1.081,"generosity":0.125,"trust":0.474,"dysres":1.31},{"country":"Costa Rica","rank":4,"life":7.439,"lo":7.356,"hi":7.522,"gdp":1.697,"social":1.483,"health":0.739,"freedom":1.101,"generosity":0.059,"trust":0.122,"dysres":2.236},{"country":"Sweden","rank":5,"life":7.255,"lo":7.172,"hi":7.337,"gdp":1.95,"social":1.57,"health":1.027,"freedom":1.07,"generosity":0.149,"trust":0.447,"dysres":1.041},{"country":"Norway","rank":6,"life":7.242,"lo":7.156,"hi":7.327,"gdp":2.057,"social":1.626,"health":0.983,"freedom":1.092,"generosity":0.157,"trust":0.413,"dysres":0.913},{"country":"Netherlands","rank":7,"life":7.223,"lo":7.153,"hi":7.293,"gdp":1.983,"social":1.539,"health":0.922,"freedom":1.0,"generosity":0.175,"trust":0.349,"dysres":1.255},{"country":"Israel","rank":8,"life":7.187,"lo":7.119,"hi":7.254,"gdp":1.867,"social":1.606,"health":0.925,"freedom":0.863,"generosity":0.139,"trust":0.196,"dysres":1.592},{"country":"Luxembourg","rank":9,"life":7.063,"lo":6.971,"hi":7.154,"gdp":2.162,"social":1.465,"health":0.981,"freedom":1.056,"generosity":0.111,"trust":0.382,"dysres":0.907},{"country":"Switzerland","rank":10,"life":7.018,"lo":6.937,"hi":7.099,"gdp":2.028,"social":1.534,"health":1.017,"freedom":1.035,"generosity":0.148,"trust":0.452,"dysres":0.804},{"country":"New Zealand","rank":11,"life":6.995,"lo":6.915,"hi":7.074,"gdp":1.876,"social":1.58,"health":0.924,"freedom":1.034,"generosity":0.155,"trust":0.422,"dysres":1.003},{"country":"Mexico","rank":12,"life":6.972,"lo":6.885,"hi":7.06,"gdp":1.636,"social":1.366,"health":0.631,"freedom":1.015,"generosity":0.056,"trust":0.128,"dysres":2.141},{"country":"Ireland","rank":13,"life":6.928,"lo":6.839,"hi":7.018,"gdp":2.146,"social":1.558,"health":0.936,"freedom":1.032,"generosity":0.172,"trust":0.364,"dysres":0.72},{"country":"Belgium","rank":14,"life":6.926,"lo":6.859,"hi":6.993,"gdp":1.951,"social":1.52,"health":0.988,"freedom":0.99,"generosity":0.107,"trust":0.296,"dysres":1.074},{"country":"Australia","rank":15,"life":6.916,"lo":6.833,"hi":6.999,"gdp":1.937,"social":1.497,"health":0.956,"freedom":0.989,"generosity":0.159,"trust":0.294,"dysres":1.085},{"country":"Kosovo","rank":16,"life":6.91,"lo":6.81,"hi":7.01,"gdp":1.535,"social":1.293,"health":0.907,"freedom":1.045,"generosity":0.186,"trust":0.082,"dysres":1.86},{"country":"Germany","rank":17,"life":6.882,"lo":6.789,"hi":6.975,"gdp":1.948,"social":1.49,"health":0.876,"freedom":0.948,"generosity":0.145,"trust":0.349,"dysres":1.128},{"country":"Slovenia","rank":18,"life":6.868,"lo":6.783,"hi":6.954,"gdp":1.872,"social":1.594,"health":0.913,"freedom":1.097,"generosity":0.108,"trust":0.108,"dysres":1.177},{"country":"Austria","rank":19,"life":6.845,"lo":6.764,"hi":6.927,"gdp":1.954,"social":1.474,"health":0.926,"freedom":0.979,"generosity":0.171,"trust":0.285,"dysres":1.057},{"country":"Czechia","rank":20,"life":6.821,"lo":6.739,"hi":6.903,"gdp":1.869,"social":1.594,"health":0.72,"freedom":1.045,"generosity":0.106,"trust":0.081,"dysres":1.405},{"country":"United Arab Emirates","rank":21,"life":6.821,"lo":6.734,"hi":6.907,"gdp":1.98,"social":1.096,"health":0.71,"freedom":1.071,"generosity":0.149,"trust":0.228,"dysres":1.587},{"country":"Saudi Arabia","rank":22,"life":6.817,"lo":6.726,"hi":6.907,"gdp":1.949,"social":1.412,"health":0.831,"freedom":1.042,"generosity":0.096,"trust":0.196,"dysres":1.291},{"country":"United States","rank":23,"life":6.816,"lo":6.724,"hi":6.908,"gdp":2.002,"social":1.516,"health":0.678,"freedom":0.776,"generosity":0.155,"trust":0.155,"dysres":1.534},{"country":"Poland","rank":24,"life":6.768,"lo":6.706,"hi":6.83,"gdp":1.851,"social":1.479,"health":0.693,"freedom":0.945,"generosity":0.023,"trust":0.177,"dysres":1.6},{"country":"Canada","rank":25,"life":6.741,"lo":6.656,"hi":6.826,"gdp":1.917,"social":1.525,"health":0.955,"freedom":0.948,"generosity":0.153,"trust":0.321,"dysres":0.923},{"country":"Taiwan Province of China","rank":26,"life":6.714,"lo":6.628,"hi":6.8,"gdp":1.959,"social":1.446,"health":0.933,"freedom":0.879,"generosity":0.107,"trust":0.179,"dysres":1.211},{"country":"Belize","rank":27,"life":6.711,"lo":6.432,"hi":6.989,"gdp":1.471,"social":1.42,"health":0.609,"freedom":1.146,"generosity":0.07,"trust":0.08,"dysres":1.913},{"country":"Lithuania","rank":28,"life":6.704,"lo":6.606,"hi":6.801,"gdp":1.863,"social":1.555,"health":0.653,"freedom":0.891,"generosity":0.049,"trust":0.113,"dysres":1.579},{"country":"United Kingdom","rank":29,"life":6.694,"lo":6.613,"hi":6.776,"gdp":1.896,"social":1.458,"health":0.888,"freedom":0.962,"generosity":0.191,"trust":0.291,"dysres":1.008},{"country":"Serbia","rank":30,"life":6.691,"lo":6.607,"hi":6.775,"gdp":1.696,"social":1.543,"health":0.58,"freedom":0.913,"generosity":0.124,"trust":0.096,"dysres":1.74},{"country":"Uruguay","rank":31,"life":6.635,"lo":6.553,"hi":6.717,"gdp":1.748,"social":1.54,"health":0.525,"freedom":1.054,"generosity":0.07,"trust":0.194,"dysres":1.505},{"country":"Brazil","rank":32,"life":6.634,"lo":6.54,"hi":6.728,"gdp":1.602,"social":1.396,"health":0.508,"freedom":0.964,"generosity":0.081,"trust":0.122,"dysres":1.96},{"country":"Kazakhstan","rank":33,"life":6.633,"lo":6.555,"hi":6.711,"gdp":1.782,"social":1.599,"health":0.552,"freedom":0.982,"generosity":0.117,"trust":0.104,"dysres":1.496},{"country":"Romania","rank":34,"life":6.629,"lo":6.542,"hi":6.715,"gdp":1.818,"social":1.233,"health":0.608,"freedom":0.965,"generosity":0.03,"trust":0.034,"dysres":1.941},{"country":"France","rank":35,"life":6.586,"lo":6.51,"hi":6.662,"gdp":1.907,"social":1.435,"health":0.95,"freedom":0.83,"generosity":0.09,"trust":0.24,"dysres":1.133},{"country":"Singapore","rank":36,"life":6.585,"lo":6.497,"hi":6.674,"gdp":2.167,"social":1.471,"health":1.059,"freedom":0.98,"generosity":0.145,"trust":0.512,"dysres":0.252},{"country":"El Salvador","rank":37,"life":6.578,"lo":6.461,"hi":6.694,"gdp":1.448,"social":1.086,"health":0.633,"freedom":1.089,"generosity":0.047,"trust":0.289,"dysres":1.987},{"country":"Italy","rank":38,"life":6.574,"lo":6.471,"hi":6.678,"gdp":1.899,"social":1.405,"health":0.975,"freedom":0.746,"generosity":0.075,"trust":0.067,"dysres":1.407},{"country":"Panama","rank":39,"life":6.547,"lo":6.432,"hi":6.661,"gdp":1.787,"social":1.479,"health":0.818,"freedom":0.975,"generosity":0.039,"trust":0.042,"dysres":1.407},{"country":"Kuwait","rank":40,"life":6.543,"lo":6.432,"hi":6.655,"gdp":1.862,"social":1.316,"health":0.88,"freedom":1.031,"generosity":0.11,"trust":0.167,"dysres":1.177},{"country":"Spain","rank":41,"life":6.54,"lo":6.459,"hi":6.62,"gdp":1.871,"social":1.552,"health":1.036,"freedom":0.857,"generosity":0.112,"trust":0.167,"dysres":0.946},{"country":"Guatemala","rank":42,"life":6.533,"lo":6.39,"hi":6.676,"gdp":1.472,"social":1.175,"health":0.38,"freedom":1.034,"generosity":0.076,"trust":0.094,"dysres":2.304},{"country":"Malta","rank":43,"life":6.436,"lo":6.357,"hi":6.516,"gdp":1.942,"social":1.532,"health":0.948,"freedom":0.977,"generosity":0.183,"trust":0.12,"dysres":0.735},{"country":"Argentina","rank":44,"life":6.43,"lo":6.337,"hi":6.522,"gdp":1.7,"social":1.517,"health":0.621,"freedom":0.97,"generosity":0.052,"trust":0.076,"dysres":1.493},{"country":"Viet Nam","rank":45,"life":6.428,"lo":6.353,"hi":6.504,"gdp":1.51,"social":1.375,"health":0.698,"freedom":1.147,"generosity":0.039,"trust":0.207,"dysres":1.453},{"country":"Estonia","rank":46,"life":6.41,"lo":6.33,"hi":6.49,"gdp":1.824,"social":1.604,"health":0.692,"freedom":0.99,"generosity":0.105,"trust":0.353,"dysres":0.842},{"country":"Bosnia and Herzegovina","rank":47,"life":6.381,"lo":6.283,"hi":6.478,"gdp":1.616,"social":1.425,"health":0.678,"freedom":0.874,"generosity":0.152,"trust":0.024,"dysres":1.612},{"country":"Latvia","rank":48,"life":6.365,"lo":6.277,"hi":6.454,"gdp":1.797,"social":1.61,"health":0.512,"freedom":0.94,"generosity":0.103,"trust":0.097,"dysres":1.305},{"country":"Jamaica","rank":49,"life":6.305,"lo":5.994,"hi":6.615,"gdp":1.445,"social":1.554,"health":0.371,"freedom":0.966,"generosity":0.059,"trust":0.082,"dysres":1.827},{"country":"Chile","rank":50,"life":6.302,"lo":6.212,"hi":6.393,"gdp":1.73,"social":1.427,"health":0.792,"freedom":0.926,"generosity":0.087,"trust":0.087,"dysres":1.254},{"country":"Nicaragua","rank":51,"life":6.301,"lo":6.127,"hi":6.475,"gdp":1.32,"social":1.349,"health":0.74,"freedom":1.03,"generosity":0.097,"trust":0.278,"dysres":1.487},{"country":"Thailand","rank":52,"life":6.296,"lo":6.187,"hi":6.405,"gdp":1.632,"social":1.424,"health":0.694,"freedom":1.087,"generosity":0.195,"trust":0.029,"dysres":1.234},{"country":"Uzbekistan","rank":53,"life":6.283,"lo":6.18,"hi":6.386,"gdp":1.415,"social":1.527,"health":0.771,"freedom":1.085,"generosity":0.173,"trust":0.196,"dysres":1.116},{"country":"Slovakia","rank":54,"life":6.255,"lo":6.189,"hi":6.321,"gdp":1.815,"social":1.63,"health":0.564,"freedom":0.847,"generosity":0.056,"trust":0.065,"dysres":1.278},{"country":"Bahrain","rank":55,"life":6.254,"lo":6.143,"hi":6.364,"gdp":1.93,"social":1.293,"health":0.693,"freedom":1.055,"generosity":0.143,"trust":0.171,"dysres":0.969},{"country":"Philippines","rank":56,"life":6.206,"lo":6.097,"hi":6.315,"gdp":1.413,"social":1.285,"health":0.286,"freedom":1.085,"generosity":0.088,"trust":0.095,"dysres":1.953},{"country":"Paraguay","rank":57,"life":6.198,"lo":6.091,"hi":6.306,"gdp":1.547,"social":1.529,"health":0.209,"freedom":1.039,"generosity":0.097,"trust":0.058,"dysres":1.719},{"country":"Oman","rank":58,"life":6.197,"lo":5.973,"hi":6.42,"gdp":1.789,"social":1.286,"health":0.58,"freedom":1.057,"generosity":0.132,"trust":0.188,"dysres":1.164},{"country":"Ecuador","rank":59,"life":6.144,"lo":6.027,"hi":6.261,"gdp":1.505,"social":1.168,"health":0.835,"freedom":0.86,"generosity":0.058,"trust":0.085,"dysres":1.634},{"country":"Montenegro","rank":60,"life":6.139,"lo":6.057,"hi":6.222,"gdp":1.709,"social":1.485,"health":0.68,"freedom":0.935,"generosity":0.073,"trust":0.142,"dysres":1.115},{"country":"Japan","rank":61,"life":6.13,"lo":6.048,"hi":6.211,"gdp":1.858,"social":1.414,"health":1.041,"freedom":0.875,"generosity":0.019,"trust":0.202,"dysres":0.722},{"country":"Cyprus","rank":62,"life":6.126,"lo":6.013,"hi":6.24,"gdp":1.892,"social":1.215,"health":0.953,"freedom":0.794,"generosity":0.086,"trust":0.07,"dysres":1.116},{"country":"Honduras","rank":63,"life":6.096,"lo":5.954,"hi":6.237,"gdp":1.277,"social":1.083,"health":0.466,"freedom":0.999,"generosity":0.122,"trust":0.081,"dysres":2.067},{"country":"Dominican Republic","rank":64,"life":6.093,"lo":5.957,"hi":6.23,"gdp":1.664,"social":1.406,"health":0.702,"freedom":1.015,"generosity":0.061,"trust":0.188,"dysres":1.057},{"country":"China","rank":65,"life":6.074,"lo":5.998,"hi":6.15,"gdp":1.662,"social":0.963,"health":0.905,"freedom":0.793,"generosity":0.089,"trust":0.161,"dysres":1.502},{"country":"Kyrgyzstan","rank":66,"life":6.049,"lo":5.976,"hi":6.121,"gdp":1.296,"social":1.565,"health":0.759,"freedom":1.108,"generosity":0.142,"trust":0.102,"dysres":1.077},{"country":"Republic of Korea","rank":67,"life":6.04,"lo":5.945,"hi":6.134,"gdp":1.906,"social":1.23,"health":1.028,"freedom":0.825,"generosity":0.089,"trust":0.149,"dysres":0.812},{"country":"Colombia","rank":68,"life":6.04,"lo":5.933,"hi":6.146,"gdp":1.586,"social":1.374,"health":0.63,"freedom":0.915,"generosity":0.042,"trust":0.051,"dysres":1.441},{"country":"Portugal","rank":69,"life":6.029,"lo":5.928,"hi":6.131,"gdp":1.83,"social":1.461,"health":0.944,"freedom":1.005,"generosity":0.035,"trust":0.031,"dysres":0.724},{"country":"Croatia","rank":70,"life":6.009,"lo":5.928,"hi":6.09,"gdp":1.834,"social":1.562,"health":0.737,"freedom":0.675,"generosity":0.022,"trust":0.095,"dysres":1.084},{"country":"Malaysia","rank":71,"life":6.005,"lo":5.901,"hi":6.11,"gdp":1.766,"social":1.17,"health":0.413,"freedom":1.109,"generosity":0.161,"trust":0.112,"dysres":1.275},{"country":"Peru","rank":72,"life":5.974,"lo":5.872,"hi":6.076,"gdp":1.535,"social":1.24,"health":0.605,"freedom":0.849,"generosity":0.055,"trust":0.01,"dysres":1.68},{"country":"Mauritius","rank":73,"life":5.939,"lo":5.814,"hi":6.064,"gdp":1.707,"social":1.384,"health":0.704,"freedom":0.926,"generosity":0.092,"trust":0.127,"dysres":0.999},{"country":"Hungary","rank":74,"life":5.937,"lo":5.829,"hi":6.044,"gdp":1.819,"social":1.625,"health":0.633,"freedom":0.785,"generosity":0.103,"trust":0.056,"dysres":0.916},{"country":"Mongolia","rank":75,"life":5.936,"lo":5.852,"hi":6.02,"gdp":1.558,"social":1.615,"health":0.421,"freedom":0.752,"generosity":0.162,"trust":0.051,"dysres":1.376},{"country":"Trinidad and Tobago","rank":76,"life":5.905,"lo":5.651,"hi":6.159,"gdp":1.748,"social":1.413,"health":0.49,"freedom":0.884,"generosity":0.109,"trust":0.0,"dysres":1.262},{"country":"Republic of Moldova","rank":77,"life":5.851,"lo":5.741,"hi":5.961,"gdp":1.55,"social":1.277,"health":0.409,"freedom":0.981,"generosity":0.053,"trust":0.037,"dysres":1.544},{"country":"Bolivia","rank":78,"life":5.835,"lo":5.727,"hi":5.943,"gdp":1.442,"social":1.2,"health":0.36,"freedom":0.909,"generosity":0.059,"trust":0.038,"dysres":1.827},{"country":"Russian Federation","rank":79,"life":5.834,"lo":5.735,"hi":5.932,"gdp":1.821,"social":1.331,"health":0.505,"freedom":0.809,"generosity":0.112,"trust":0.133,"dysres":1.122},{"country":"Venezuela","rank":80,"life":5.756,"lo":5.646,"hi":5.866,"gdp":0.0,"social":1.335,"health":0.561,"freedom":0.846,"generosity":0.18,"trust":0.133,"dysres":2.701},{"country":"Libya","rank":81,"life":5.731,"lo":5.65,"hi":5.811,"gdp":1.48,"social":1.136,"health":0.619,"freedom":0.865,"generosity":0.099,"trust":0.245,"dysres":1.286},{"country":"North Macedonia","rank":82,"life":5.719,"lo":5.629,"hi":5.809,"gdp":1.665,"social":1.448,"health":0.581,"freedom":0.74,"generosity":0.124,"trust":0.013,"dysres":1.149},{"country":"Algeria","rank":83,"life":5.714,"lo":5.587,"hi":5.841,"gdp":1.535,"social":1.275,"health":0.964,"freedom":0.933,"generosity":0.057,"trust":0.113,"dysres":0.837},{"country":"Bulgaria","rank":84,"life":5.703,"lo":5.611,"hi":5.796,"gdp":1.768,"social":1.587,"health":0.47,"freedom":0.881,"generosity":0.059,"trust":0.003,"dysres":0.935},{"country":"Greece","rank":85,"life":5.697,"lo":5.584,"hi":5.81,"gdp":1.795,"social":1.257,"health":0.799,"freedom":0.478,"generosity":0.023,"trust":0.064,"dysres":1.282},{"country":"Albania","rank":86,"life":5.662,"lo":5.543,"hi":5.782,"gdp":1.631,"social":1.026,"health":0.782,"freedom":1.014,"generosity":0.106,"trust":0.06,"dysres":1.043},{"country":"Indonesia","rank":87,"life":5.617,"lo":5.517,"hi":5.718,"gdp":1.512,"social":1.229,"health":0.485,"freedom":1.043,"generosity":0.295,"trust":0.033,"dysres":1.02},{"country":"Armenia","rank":89,"life":5.584,"lo":5.485,"hi":5.683,"gdp":1.608,"social":1.225,"health":1.05,"freedom":0.914,"generosity":0.026,"trust":0.152,"dysres":0.608},{"country":"Hong Kong SAR of China","rank":90,"life":5.569,"lo":5.49,"hi":5.648,"gdp":1.96,"social":1.33,"health":1.238,"freedom":0.852,"generosity":0.09,"trust":0.395,"dysres":-0.295},{"country":"Georgia","rank":91,"life":5.517,"lo":5.42,"hi":5.614,"gdp":1.669,"social":1.201,"health":0.5,"freedom":0.988,"generosity":0.0,"trust":0.161,"dysres":0.998},{"country":"Lao PDR","rank":92,"life":5.515,"lo":5.39,"hi":5.641,"gdp":1.357,"social":0.866,"health":0.554,"freedom":1.065,"generosity":0.134,"trust":0.174,"dysres":1.366},{"country":"Mozambique","rank":93,"life":5.336,"lo":5.147,"hi":5.525,"gdp":0.839,"social":1.018,"health":0.126,"freedom":0.888,"generosity":0.116,"trust":0.165,"dysres":2.182},{"country":"Türkiye","rank":94,"life":5.3,"lo":5.222,"hi":5.379,"gdp":1.785,"social":1.313,"health":0.692,"freedom":0.363,"generosity":0.046,"trust":0.099,"dysres":1.002},{"country":"Iraq","rank":95,"life":5.212,"lo":5.103,"hi":5.321,"gdp":1.477,"social":1.127,"health":0.704,"freedom":0.615,"generosity":0.087,"trust":0.084,"dysres":1.117},{"country":"Gabon","rank":96,"life":5.167,"lo":5.03,"hi":5.304,"gdp":1.591,"social":1.003,"health":0.45,"freedom":0.829,"generosity":0.043,"trust":0.092,"dysres":1.159},{"country":"Iran","rank":97,"life":5.151,"lo":5.029,"hi":5.274,"gdp":1.565,"social":1.249,"health":0.693,"freedom":0.599,"generosity":0.189,"trust":0.124,"dysres":0.733},{"country":"Côte d’Ivoire","rank":98,"life":5.148,"lo":5.018,"hi":5.277,"gdp":1.285,"social":0.694,"health":0.45,"freedom":0.84,"generosity":0.1,"trust":0.176,"dysres":1.604},{"country":"Nepal","rank":99,"life":5.147,"lo":5.03,"hi":5.264,"gdp":1.2,"social":1.099,"health":0.508,"freedom":0.887,"generosity":0.117,"trust":0.075,"dysres":1.26},{"country":"Cameroon","rank":100,"life":5.083,"lo":4.956,"hi":5.21,"gdp":1.191,"social":0.9,"health":0.348,"freedom":0.821,"generosity":0.094,"trust":0.055,"dysres":1.675},{"country":"South Africa","rank":101,"life":5.009,"lo":4.885,"hi":5.132,"gdp":1.494,"social":1.285,"health":0.101,"freedom":0.825,"generosity":0.064,"trust":0.064,"dysres":1.176},{"country":"Azerbaijan","rank":102,"life":4.993,"lo":4.913,"hi":5.072,"gdp":1.636,"social":0.979,"health":0.847,"freedom":0.935,"generosity":0.058,"trust":0.198,"dysres":0.34},{"country":"Niger","rank":103,"life":4.94,"lo":4.79,"hi":5.09,"gdp":0.89,"social":0.651,"health":0.3,"freedom":0.9,"generosity":0.121,"trust":0.115,"dysres":1.964},{"country":"Pakistan","rank":104,"life":4.868,"lo":4.737,"hi":4.999,"gdp":1.224,"social":0.556,"health":0.489,"freedom":0.564,"generosity":0.144,"trust":0.071,"dysres":1.819},{"country":"Tunisia","rank":105,"life":4.798,"lo":4.714,"hi":4.883,"gdp":1.475,"social":1.043,"health":0.442,"freedom":0.652,"generosity":0.038,"trust":0.071,"dysres":1.078},{"country":"Nigeria","rank":106,"life":4.788,"lo":4.665,"hi":4.911,"gdp":1.335,"social":1.083,"health":0.462,"freedom":0.735,"generosity":0.151,"trust":0.036,"dysres":0.986},{"country":"Senegal","rank":107,"life":4.787,"lo":4.673,"hi":4.9,"gdp":1.164,"social":0.882,"health":0.48,"freedom":0.922,"generosity":0.114,"trust":0.113,"dysres":1.111},{"country":"Namibia","rank":108,"life":4.781,"lo":4.679,"hi":4.882,"gdp":1.41,"social":1.411,"health":0.038,"freedom":0.67,"generosity":0.048,"trust":0.058,"dysres":1.145},{"country":"Kenya","rank":110,"life":4.674,"lo":4.543,"hi":4.804,"gdp":1.242,"social":0.879,"health":0.518,"freedom":0.798,"generosity":0.207,"trust":0.093,"dysres":0.936},{"country":"Ukraine","rank":111,"life":4.658,"lo":4.549,"hi":4.767,"gdp":1.547,"social":1.303,"health":0.498,"freedom":0.722,"generosity":0.222,"trust":0.008,"dysres":0.358},{"country":"Morocco","rank":112,"life":4.646,"lo":4.532,"hi":4.759,"gdp":1.376,"social":0.401,"health":0.674,"freedom":0.844,"generosity":0.035,"trust":0.086,"dysres":1.229},{"country":"Guinea","rank":113,"life":4.609,"lo":4.467,"hi":4.751,"gdp":1.132,"social":0.622,"health":0.364,"freedom":0.866,"generosity":0.141,"trust":0.102,"dysres":1.381},{"country":"Mali","rank":114,"life":4.588,"lo":4.471,"hi":4.705,"gdp":1.036,"social":0.779,"health":0.381,"freedom":0.904,"generosity":0.078,"trust":0.105,"dysres":1.305},{"country":"Ghana","rank":115,"life":4.554,"lo":4.457,"hi":4.65,"gdp":1.297,"social":0.961,"health":0.507,"freedom":0.932,"generosity":0.123,"trust":0.035,"dysres":0.699},{"country":"India","rank":116,"life":4.536,"lo":4.47,"hi":4.601,"gdp":1.397,"social":0.732,"health":0.298,"freedom":1.015,"generosity":0.121,"trust":0.124,"dysres":0.848},{"country":"Somalia","rank":117,"life":4.508,"lo":4.393,"hi":4.624,"gdp":0.818,"social":0.791,"health":0.035,"freedom":0.928,"generosity":0.155,"trust":0.218,"dysres":1.562},{"country":"Uganda","rank":118,"life":4.491,"lo":4.373,"hi":4.61,"gdp":1.032,"social":1.181,"health":0.449,"freedom":0.924,"generosity":0.14,"trust":0.043,"dysres":0.722},{"country":"Jordan","rank":119,"life":4.478,"lo":4.354,"hi":4.602,"gdp":1.388,"social":1.055,"health":0.606,"freedom":0.853,"generosity":0.053,"trust":0.174,"dysres":0.348},{"country":"Mauritania","rank":120,"life":4.473,"lo":4.359,"hi":4.587,"gdp":1.272,"social":0.787,"health":0.593,"freedom":0.593,"generosity":0.109,"trust":0.188,"dysres":0.931},{"country":"Cambodia","rank":121,"life":4.462,"lo":4.354,"hi":4.569,"gdp":1.295,"social":1.075,"health":0.531,"freedom":1.123,"generosity":0.148,"trust":0.088,"dysres":0.201},{"country":"Congo","rank":122,"life":4.456,"lo":4.294,"hi":4.617,"gdp":1.259,"social":0.554,"health":0.391,"freedom":0.751,"generosity":0.074,"trust":0.123,"dysres":1.304},{"country":"Burkina Faso","rank":123,"life":4.455,"lo":4.354,"hi":4.557,"gdp":0.995,"social":0.63,"health":0.343,"freedom":0.82,"generosity":0.135,"trust":0.253,"dysres":1.28},{"country":"Benin","rank":124,"life":4.393,"lo":4.262,"hi":4.525,"gdp":1.122,"social":0.087,"health":0.409,"freedom":0.816,"generosity":0.086,"trust":0.243,"dysres":1.63},{"country":"Chad","rank":125,"life":4.385,"lo":4.252,"hi":4.518,"gdp":0.979,"social":0.676,"health":0.292,"freedom":0.571,"generosity":0.151,"trust":0.116,"dysres":1.6},{"country":"Lesotho","rank":126,"life":4.375,"lo":4.17,"hi":4.579,"gdp":1.007,"social":1.135,"health":0.0,"freedom":0.741,"generosity":0.057,"trust":0.069,"dysres":1.365},{"country":"Bangladesh","rank":127,"life":4.319,"lo":4.197,"hi":4.442,"gdp":1.353,"social":0.245,"health":0.672,"freedom":1.078,"generosity":0.111,"trust":0.087,"dysres":0.774},{"country":"Gambia","rank":128,"life":4.306,"lo":4.21,"hi":4.403,"gdp":1.05,"social":0.853,"health":0.393,"freedom":0.807,"generosity":0.223,"trust":0.042,"dysres":0.938},{"country":"Myanmar","rank":129,"life":4.287,"lo":4.144,"hi":4.43,"gdp":1.211,"social":0.977,"health":0.488,"freedom":0.722,"generosity":0.292,"trust":0.16,"dysres":0.436},{"country":"Liberia","rank":130,"life":4.28,"lo":4.116,"hi":4.444,"gdp":0.867,"social":0.815,"health":0.386,"freedom":0.796,"generosity":0.125,"trust":0.066,"dysres":1.225},{"country":"Togo","rank":131,"life":4.277,"lo":4.17,"hi":4.384,"gdp":1.039,"social":0.572,"health":0.442,"freedom":0.682,"generosity":0.085,"trust":0.144,"dysres":1.314},{"country":"Madagascar","rank":132,"life":4.174,"lo":4.062,"hi":4.287,"gdp":0.867,"social":0.71,"health":0.393,"freedom":0.38,"generosity":0.118,"trust":0.116,"dysres":1.59},{"country":"Zambia","rank":133,"life":4.106,"lo":3.954,"hi":4.259,"gdp":1.109,"social":0.861,"health":0.25,"freedom":0.991,"generosity":0.139,"trust":0.101,"dysres":0.654},{"country":"Sri Lanka","rank":134,"life":4.013,"lo":3.898,"hi":4.127,"gdp":1.496,"social":1.13,"health":0.567,"freedom":0.872,"generosity":0.111,"trust":0.059,"dysres":-0.222},{"country":"Ethiopia","rank":135,"life":3.985,"lo":3.879,"hi":4.091,"gdp":1.033,"social":0.854,"health":0.453,"freedom":0.653,"generosity":0.144,"trust":0.097,"dysres":0.753},{"country":"Comoros","rank":136,"life":3.925,"lo":3.752,"hi":4.097,"gdp":1.089,"social":0.352,"health":0.468,"freedom":0.373,"generosity":0.118,"trust":0.172,"dysres":1.352},{"country":"Eswatini","rank":137,"life":3.909,"lo":3.752,"hi":4.066,"gdp":1.41,"social":1.036,"health":0.044,"freedom":0.579,"generosity":0.055,"trust":0.137,"dysres":0.647},{"country":"Tanzania","rank":138,"life":3.902,"lo":3.763,"hi":4.041,"gdp":1.108,"social":0.778,"health":0.459,"freedom":1.006,"generosity":0.145,"trust":0.251,"dysres":0.155},{"country":"Egypt","rank":139,"life":3.862,"lo":3.765,"hi":3.958,"gdp":1.558,"social":0.862,"health":0.521,"freedom":0.727,"generosity":0.022,"trust":0.097,"dysres":0.074},{"country":"DR Congo","rank":140,"life":3.761,"lo":3.609,"hi":3.914,"gdp":0.857,"social":0.792,"health":0.321,"freedom":0.72,"generosity":0.146,"trust":0.066,"dysres":0.86},{"country":"Lebanon","rank":141,"life":3.723,"lo":3.635,"hi":3.811,"gdp":1.428,"social":1.05,"health":0.416,"freedom":0.434,"generosity":0.074,"trust":0.057,"dysres":0.265},{"country":"Yemen","rank":142,"life":3.532,"lo":3.306,"hi":3.758,"gdp":0.692,"social":1.292,"health":0.431,"freedom":0.549,"generosity":0.084,"trust":0.109,"dysres":0.374},{"country":"Botswana","rank":143,"life":3.464,"lo":3.335,"hi":3.593,"gdp":1.582,"social":0.989,"health":0.017,"freedom":0.86,"generosity":0.022,"trust":0.093,"dysres":-0.099},{"country":"Zimbabwe","rank":144,"life":3.346,"lo":3.244,"hi":3.449,"gdp":1.213,"social":0.782,"health":0.189,"freedom":0.729,"generosity":0.056,"trust":0.128,"dysres":0.251},{"country":"Malawi","rank":145,"life":3.284,"lo":3.153,"hi":3.415,"gdp":0.864,"social":0.326,"health":0.299,"freedom":0.812,"generosity":0.109,"trust":0.143,"dysres":0.73},{"country":"Sierra Leone","rank":146,"life":3.251,"lo":3.147,"hi":3.355,"gdp":1.054,"social":0.692,"health":0.405,"freedom":0.8,"generosity":0.131,"trust":0.052,"dysres":0.117},{"country":"Afghanistan","rank":147,"life":1.446,"lo":1.348,"hi":1.544,"gdp":0.921,"social":0.0,"health":0.176,"freedom":0.0,"generosity":0.079,"trust":0.131,"dysres":0.139}];
 
 const FACTORS = [
-  {key:'social',    label:'Social Support',     short:'Social',    hex:'#4B7583'},
-  {key:'freedom',   label:'Freedom',            short:'Freedom',   hex:'#8C4A3D'},
-  {key:'health',    label:'Health',             short:'Health',    hex:'#7C7A2E'},
-  {key:'gdp',       label:'Economic Prosperity',short:'Economy',   hex:'#B5661D'},
-  {key:'generosity',label:'Generosity',         short:'Generosity',hex:'#C1524B'},
-  {key:'trust',     label:'Trust',              short:'Trust',     hex:'#3E6659'}
+  {key:'social',    label:'Social Support',     short:'Social',    hex:'var(--social)'},
+  {key:'freedom',   label:'Freedom',            short:'Freedom',   hex:'var(--freedom)'},
+  {key:'health',    label:'Health',             short:'Health',    hex:'var(--health)'},
+  {key:'gdp',       label:'Economic Prosperity',short:'Economy',   hex:'var(--econ)'},
+  {key:'generosity',label:'Generosity',         short:'Generosity',hex:'var(--generosity)'},
+  {key:'trust',     label:'Trust',              short:'Trust',     hex:'var(--trust)'}
 ];
 
 const MAXES={};
@@ -474,11 +265,11 @@ SORTED_NAMES.forEach(name=>{
 homeSel.addEventListener('change', ()=> state.homeCountry=homeSel.value);
 dreamSel.addEventListener('change', ()=> state.dreamCountryStated=dreamSel.value);
 
-// ---------------- FLOWER RENDERER (touching circles, image-2 style) ----------------
+// ---------------- FLOWER RENDERER ----------------
 function renderFlower(svgEl, values, opts={}){
   const size=300, cx=size/2, cy=size/2;
   const minR=opts.minR ?? 14, maxR=opts.maxR ?? 44;
-  const overlap=opts.overlap ?? 1.7; // dist = r * overlap -> circles cluster/overlap like reference flower
+  const overlap=opts.overlap ?? 1.7;
   svgEl.setAttribute('viewBox', `0 0 ${size} ${size}`);
   svgEl.innerHTML='';
   const ns='http://www.w3.org/2000/svg';
@@ -495,7 +286,7 @@ function renderFlower(svgEl, values, opts={}){
     const circle=document.createElementNS(ns,'circle');
     circle.setAttribute('cx', x); circle.setAttribute('cy', y); circle.setAttribute('r', r);
     circle.setAttribute('fill', f.hex);
-    circle.setAttribute('fill-opacity', opts.opacity ?? 0.9);
+    circle.setAttribute('fill-opacity', opts.opacity ?? 0.95);
     circle.dataset.factor=f.key;
     circle.style.transformOrigin=`${x}px ${y}px`;
     if(opts.animate){
@@ -503,18 +294,6 @@ function renderFlower(svgEl, values, opts={}){
       circle.style.transition=`transform .5s cubic-bezier(.34,1.56,.64,1) ${i*0.05}s`;
     }
     g.appendChild(circle);
-
-    if(opts.interactive){
-      circle.style.cursor='pointer';
-      circle.addEventListener('mouseenter',(e)=>{
-        circle.setAttribute('fill-opacity',1);
-        if(opts.onHover) opts.onHover(f,val,e);
-      });
-      circle.addEventListener('mouseleave',()=>{
-        circle.setAttribute('fill-opacity', opts.opacity ?? 0.9);
-        if(opts.onLeave) opts.onLeave();
-      });
-    }
   });
 
   if(opts.animate){
@@ -531,51 +310,37 @@ function userProfileValues(){
   return vals;
 }
 
-// ---------------- INTRO FLOWER (decorative, with smiley face) ----------------
-function renderIntroFlower(){
-  const svg=document.getElementById('introFlower');
-  const size=420, cx=size/2, cy=size/2, r=46, dist=r*1.85;
+// ---------------- INTRO SMILE (Clean minimal vector) ----------------
+function renderIntroSmile(){
+  const svg=document.getElementById('introSmile');
+  const size=140, cx=size/2, cy=size/2;
   svg.setAttribute('viewBox',`0 0 ${size} ${size}`);
   svg.innerHTML='';
   const ns='http://www.w3.org/2000/svg';
 
-  FACTORS.forEach((f,i)=>{
-    const angle=(Math.PI*2*i/6) - Math.PI/2;
-    const x=cx+Math.cos(angle)*dist, y=cy+Math.sin(angle)*dist;
-    const circle=document.createElementNS(ns,'circle');
-    circle.setAttribute('cx',x); circle.setAttribute('cy',y); circle.setAttribute('r',r);
-    circle.setAttribute('fill', f.hex);
-    circle.setAttribute('fill-opacity', 0.94);
-    circle.style.transformOrigin=`${x}px ${y}px`;
-    circle.style.transform='scale(0.1)';
-    circle.style.transition=`transform .6s cubic-bezier(.34,1.56,.64,1) ${i*0.08}s`;
-    svg.appendChild(circle);
-    requestAnimationFrame(()=> requestAnimationFrame(()=> circle.style.transform='scale(1)'));
-  });
-
   const face=document.createElementNS(ns,'circle');
-  face.setAttribute('cx',cx); face.setAttribute('cy',cy); face.setAttribute('r',48);
-  face.setAttribute('fill','var(--panel)');
+  face.setAttribute('cx',cx); face.setAttribute('cy',cy); face.setAttribute('r',68);
+  face.setAttribute('fill','var(--trust)'); // Yellow bright face
   face.setAttribute('stroke','var(--ink)');
-  face.setAttribute('stroke-width',2);
+  face.setAttribute('stroke-width',4);
   svg.appendChild(face);
 
   const eyeL=document.createElementNS(ns,'circle');
-  eyeL.setAttribute('cx',cx-16); eyeL.setAttribute('cy',cy-9); eyeL.setAttribute('r',5); eyeL.setAttribute('fill','var(--ink)');
+  eyeL.setAttribute('cx',cx-24); eyeL.setAttribute('cy',cy-12); eyeL.setAttribute('r',8); eyeL.setAttribute('fill','var(--ink)');
   svg.appendChild(eyeL);
   const eyeR=document.createElementNS(ns,'circle');
-  eyeR.setAttribute('cx',cx+16); eyeR.setAttribute('cy',cy-9); eyeR.setAttribute('r',5); eyeR.setAttribute('fill','var(--ink)');
+  eyeR.setAttribute('cx',cx+24); eyeR.setAttribute('cy',cy-12); eyeR.setAttribute('r',8); eyeR.setAttribute('fill','var(--ink)');
   svg.appendChild(eyeR);
 
   const smile=document.createElementNS(ns,'path');
-  smile.setAttribute('d', `M ${cx-20} ${cy+9} Q ${cx} ${cy+28} ${cx+20} ${cy+9}`);
+  smile.setAttribute('d', `M ${cx-30} ${cy+15} Q ${cx} ${cy+45} ${cx+30} ${cy+15}`);
   smile.setAttribute('stroke','var(--ink)');
-  smile.setAttribute('stroke-width',3.2);
+  smile.setAttribute('stroke-width',6);
   smile.setAttribute('fill','none');
   smile.setAttribute('stroke-linecap','round');
   svg.appendChild(smile);
 }
-renderIntroFlower();
+renderIntroSmile();
 
 // ---------------- BAR CHART ----------------
 function renderBars(container, values){
@@ -591,7 +356,7 @@ function renderBars(container, values){
   });
 }
 
-// ---------------- SCREEN 1 : cards (rank number OUTSIDE card) ----------------
+// ---------------- SCREEN 1 : cards ----------------
 const cardList=document.getElementById('cardList');
 function renderCards(){
   cardList.innerHTML='';
@@ -605,8 +370,7 @@ function renderCards(){
         <div class="swatch" style="background:${f.hex}"></div>
         <div class="label">${f.label}</div>
         <div class="row-controls">
-          <div class="updown"><button class="up">&#9650;</button><button class="down">&#9660;</button></div>
-          <div class="handle">&#8942;&#8942;</div>
+          <button class="up">&#9650;</button><button class="down">&#9660;</button>
         </div>
       </div>`;
     cardList.appendChild(row);
@@ -639,7 +403,7 @@ cardList.addEventListener('dragover',(e)=>{
 });
 function updatePreview(){
   const vals=userProfileValues();
-  renderFlower(document.getElementById('userFlowerPreview'), vals, {opacity:0.9, animate:true, minR:10, maxR:36, overlap:1.7});
+  renderFlower(document.getElementById('userFlowerPreview'), vals, {opacity:0.95, animate:true, minR:10, maxR:36, overlap:1.7});
   const topF=FACTORS.find(f=>f.key===state.order[0]);
   document.getElementById('topValueLabel').textContent=`You value ${topF.label.toLowerCase()} most`;
 }
@@ -666,14 +430,13 @@ function renderMatches(){
   state.matches.forEach(c=>{
     const card=document.createElement('div'); card.className='match-card';
     card.innerHTML=`
-      <div class="match-flower-wrap"><svg viewBox="0 0 300 300" width="74" height="74"></svg></div>
+      <div class="match-flower-wrap"><svg viewBox="0 0 300 300" width="110" height="110"></svg></div>
       <div class="match-text">
         <div class="match-country">${c.country}</div>
         <div class="match-badge">${c.matchPct}% match</div>
-        <div class="match-score">Life eval ${c.life.toFixed(2)}</div>
       </div>`;
     grid.appendChild(card);
-    renderFlower(card.querySelector('svg'), c.norm, {opacity:0.9, minR:5, maxR:15, overlap:1.7});
+    renderFlower(card.querySelector('svg'), c.norm, {opacity:0.95, minR:7, maxR:20, overlap:1.7});
     card.addEventListener('click',()=>{
       grid.querySelectorAll('.match-card').forEach(x=>x.classList.remove('selected'));
       card.classList.add('selected');
@@ -707,7 +470,7 @@ function getCompareCountry(){
   }
   if(state.compareMode==='other') return DATA.find(d=>d.country===otherSelect.value) || DATA[0];
   if(state.homeCountry) return DATA.find(d=>d.country===state.homeCountry) || DATA[0];
-  return DATA.find(d=>d.country==='India') || DATA[0];
+  return DATA.find(d=>d.country==='Finland') || DATA[0];
 }
 function renderCompare(){
   if(![...document.querySelectorAll('.toggle-btn')].some(b=>b.classList.contains('active'))){
@@ -716,8 +479,9 @@ function renderCompare(){
   const country=getCompareCountry();
   const userVals=userProfileValues();
 
-  renderFlower(document.getElementById('userFlowerCompare'), userVals, {opacity:0.9, animate:true, minR:9, maxR:32, overlap:1.7});
-  renderFlower(document.getElementById('countryFlowerCompare'), country.norm, {opacity:0.9, animate:true, minR:9, maxR:32, overlap:1.7});
+  // Larger flowers mapped as requested for screen 3
+  renderFlower(document.getElementById('userFlowerCompare'), userVals, {opacity:0.95, animate:true, minR:10, maxR:42, overlap:1.7});
+  renderFlower(document.getElementById('countryFlowerCompare'), country.norm, {opacity:0.95, animate:true, minR:10, maxR:42, overlap:1.7});
   document.getElementById('compareCountryName').textContent=country.country;
   renderBars(document.getElementById('userBars'), userVals);
   renderBars(document.getElementById('countryBars'), country.norm);
@@ -727,13 +491,13 @@ function renderCompare(){
   const countryTopF=sortedCountry[0];
   const box=document.getElementById('insightBox');
   if(userTopF.key===countryTopF.key){
-    box.innerHTML=`You value <span class="hi" style="background:${userTopF.hex}22;color:${userTopF.hex}">${userTopF.label.toLowerCase()}</span> most — and ${country.country} scores strongest on exactly that.`;
+    box.innerHTML=`You value <span class="hi" style="color:${userTopF.hex}">${userTopF.label.toLowerCase()}</span> most — and ${country.country} scores strongest on exactly that.`;
   } else {
-    box.innerHTML=`You value <span class="hi" style="background:${userTopF.hex}22;color:${userTopF.hex}">${userTopF.label.toLowerCase()}</span> most. ${country.country} scores relatively higher on <span class="hi" style="background:${countryTopF.hex}22;color:${countryTopF.hex}">${countryTopF.label.toLowerCase()}</span>.`;
+    box.innerHTML=`You value <span class="hi" style="color:${userTopF.hex}">${userTopF.label.toLowerCase()}</span> most. ${country.country} scores relatively higher on <span class="hi" style="color:${countryTopF.hex}">${countryTopF.label.toLowerCase()}</span>.`;
   }
 }
 
-// ---------------- SCREEN 4 : world scatter (x=residual, y=life evaluation) ----------------
+// ---------------- SCREEN 4 : scatter ----------------
 const legend=document.getElementById('legend');
 FACTORS.forEach(f=>{
   const item=document.createElement('div'); item.className='legend-item';
@@ -762,7 +526,7 @@ function showDetail(country){
 }
 function showDefaultDetail(){
   const panel=document.getElementById('detailPanel');
-  panel.innerHTML=`<div class="detail-default" id="detailDefault">There is no single recipe for happiness. <b>Countries reach similar life evaluation scores through very different combinations of factors.</b></div>`;
+  panel.innerHTML=`<div class="detail-default" id="detailDefault">There is no single recipe for happiness. <br><br><b>Countries reach similar life evaluation scores through very different combinations of factors.</b></div>`;
 }
 
 function renderScatter(){
@@ -776,7 +540,6 @@ function renderScatter(){
   const padL=58, padR=26, padT=28, padB=48;
   const plotW=w-padL-padR, plotH=h-padT-padB;
 
-  // x = residual (Dystopia + residual), y = life evaluation
   const xScale=(dys)=> padL + ((dys-DYS_MIN)/(DYS_MAX-DYS_MIN))*plotW;
   const yScale=(life)=> padT + (1-((life-LIFE_MIN)/(LIFE_MAX-LIFE_MIN)))*plotH;
 
@@ -834,20 +597,20 @@ function renderScatter(){
   DATA.forEach(c=>{
     const x=xScale(c.dysres), y=yScale(c.life);
     const dot=document.createElementNS(ns,'circle');
-    dot.setAttribute('cx',x); dot.setAttribute('cy',y); dot.setAttribute('r',4.2);
+    dot.setAttribute('cx',x); dot.setAttribute('cy',y); dot.setAttribute('r',4.5);
     dot.setAttribute('fill','var(--ink)'); dot.setAttribute('fill-opacity',0.32);
     dot.style.cursor='pointer'; dot.style.transition='fill-opacity .2s ease, r .2s ease';
     dotsLayer.appendChild(dot);
     dotRefs[c.country]={dot, x, y};
 
     dot.addEventListener('mouseenter',()=>{
-      dot.setAttribute('fill-opacity',0.85); dot.setAttribute('r',5.5);
+      dot.setAttribute('fill-opacity',0.85); dot.setAttribute('r',6);
       tooltip.style.left=x+'px'; tooltip.style.top=y+'px';
       tooltip.textContent=`${c.country} · ${c.life.toFixed(2)}`;
       tooltip.classList.add('show');
     });
     dot.addEventListener('mouseleave',()=>{
-      if(!expanded.has(c.country)){ dot.setAttribute('fill-opacity',0.32); dot.setAttribute('r',4.2); }
+      if(!expanded.has(c.country)){ dot.setAttribute('fill-opacity',0.32); dot.setAttribute('r',4.5); }
       tooltip.classList.remove('show');
     });
 
@@ -861,7 +624,7 @@ function toggleExpand(c, x, y, ns, flowerLayer, dot){
     expanded.delete(c.country);
     const fl=flowerLayer.querySelector(`[data-flower="${CSS.escape(c.country)}"]`);
     if(fl) fl.remove();
-    dot.setAttribute('fill-opacity',0.32); dot.setAttribute('r',4.2);
+    dot.setAttribute('fill-opacity',0.32); dot.setAttribute('r',4.5);
     dot.style.display='block';
     showDefaultDetail();
   } else {
@@ -875,19 +638,17 @@ function toggleExpand(c, x, y, ns, flowerLayer, dot){
     inner.setAttribute('width',64); inner.setAttribute('height',64);
     inner.setAttribute('viewBox','0 0 300 300'); inner.setAttribute('overflow','visible');
     g.appendChild(inner);
-    renderFlower(inner, c.norm, {opacity:0.92, animate:true, minR:5, maxR:14, overlap:1.7});
+    renderFlower(inner, c.norm, {opacity:0.95, animate:true, minR:5, maxR:16, overlap:1.7});
     showDetail(c);
   }
 }
 
 window.addEventListener('resize', ()=>{ if(document.getElementById('screen-4').classList.contains('active')) renderScatter(); });
 
-// ---------------- SEARCH + HIGHLIGHT ----------------
 const searchInput=document.getElementById('countrySearch');
 searchInput.addEventListener('input', ()=>{
   const val=searchInput.value.trim().toLowerCase();
   const svg=document.getElementById('scatter');
-  // remove previous ring
   const oldRing=svg.querySelector('.search-highlight-ring');
   if(oldRing) oldRing.remove();
   if(!val) return;
@@ -896,7 +657,7 @@ searchInput.addEventListener('input', ()=>{
   const {dot, x, y}=dotRefs[country.country];
   const ns='http://www.w3.org/2000/svg';
   const ring=document.createElementNS(ns,'circle');
-  ring.setAttribute('cx',x); ring.setAttribute('cy',y); ring.setAttribute('r',9);
+  ring.setAttribute('cx',x); ring.setAttribute('cy',y); ring.setAttribute('r',10);
   ring.setAttribute('fill','none'); ring.setAttribute('stroke','var(--ink)'); ring.setAttribute('stroke-width',2);
   ring.setAttribute('class','search-highlight-ring');
   ring.style.animation='searchPulse 1.4s ease-out infinite';
