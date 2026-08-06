@@ -13,14 +13,6 @@
   /* Screen 0 specific centering */
   #screen-0 { align-items: center; justify-content: center; text-align: center; display: flex; }
   
-  /* Screen 2: User profile display below question */
-  .s2-user-profile {
-    margin-top: 24px; padding: 16px 20px;
-    background: var(--panel); border: 2px solid var(--panel-line); border-radius: 16px;
-    display: inline-flex; align-items: center; gap: 16px; width: fit-content;
-  }
-  .s2-user-label { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--ink); }
-
   /* Screen 3: Broader cards, shorter min-height */
   #screen-3 .compare-grid {
     display: flex; gap: 24px; flex: 1; align-items: stretch; justify-content: center; margin-top: 0; width: 100%;
@@ -96,16 +88,16 @@
       <div class="split">
         <div class="left-pane">
           <h1 class="heading">What matters most to you?</h1>
-          <p class="sub">Rank these six factors from most to least important. Drag to reorder — watch your profile bloom on the right.</p>
-        </div>
-
-        <div class="right-pane">
-          <div class="profile-col">
+          <p class="sub">Rank these six factors from most to least important. Drag to reorder — watch your profile bloom below.</p>
+          
+          <div class="profile-col" style="margin-top: 32px; align-items: flex-start;">
             <div class="profile-label" style="font-family: var(--display); font-weight: 600; font-size: 12px; color: var(--ink-faint); margin-bottom: 8px;">Your happiness profile</div>
             <svg id="userFlowerPreview" viewBox="0 0 300 300" width="180" height="180"></svg>
           </div>
-          
-          <div class="rank-content">
+        </div>
+
+        <div class="right-pane">
+          <div class="rank-content" style="max-width: 100%;">
             <div class="cards" id="cardList"></div>
             <div class="profile-title" id="topValueLabel"></div>
           </div>
@@ -124,12 +116,7 @@
           <h1 class="heading">Which countries match your values?</h1>
           <p class="sub">We compared your ranking against real profiles from 145 countries — here's your list of best-fit matches. Tap one to set it as your dream country.</p>
 
-          <div class="s2-user-profile">
-            <svg id="screen2UserFlower" viewBox="0 0 300 300" width="80" height="80"></svg>
-            <div class="s2-user-label">Your Generated Profile</div>
-          </div>
-
-          <div class="field-group">
+          <div class="field-group" style="margin-top: 32px;">
             <div class="field">
               <label>Your home country</label>
               <select id="homeCountrySelect"><option value="">Select a country</option></select>
@@ -452,9 +439,6 @@ function computeMatches(){
 }
 function renderMatches(){
   state.matches=computeMatches();
-  
-  // Render user profile below screen 2 question
-  renderFlower(document.getElementById('screen2UserFlower'), userProfileValues(), {opacity:0.95, animate:true, minR:6, maxR:16, overlap:1.7});
   
   const grid=document.getElementById('matchesGrid');
   grid.innerHTML='';
