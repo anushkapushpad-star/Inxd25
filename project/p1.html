@@ -18,21 +18,21 @@
     display: flex; gap: 24px; flex: 1; align-items: stretch; justify-content: center; margin-top: 0; width: 100%;
   }
   #screen-3 .compare-side {
-    flex: 1; /* Allows cards to be broader and fill the space */
+    flex: 1; 
     padding: 32px 24px;
     background: var(--panel);
     border: 2px solid var(--panel-line);
     border-radius: 24px;
-    min-height: auto; /* Removes the 480px fixed height to prevent scrolling */
+    min-height: auto; 
     justify-content: flex-start;
   }
   #screen-3 .compare-name { margin-top: 16px; margin-bottom: 16px; }
-  #screen-3 .bars-list { margin-top: auto; } /* Pushes bars to bottom */
+  #screen-3 .bars-list { margin-top: auto; } 
   
   /* Screen 4: Larger detail panel filling bottom space, legends moved below chart */
   #screen-4 .left-pane { display: flex; flex-direction: column; height: 100%; }
   #screen-4 .detail-panel { 
-    flex: 1; /* Fills remaining vertical space */
+    flex: 1; 
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
@@ -47,13 +47,43 @@
     line-height: 1.4; text-align: center;
   }
 
-  /* Override heading color per user request (High contrast sunflower yellow) */
+  /* Override heading color (High contrast sunflower yellow) */
   h1.heading {
-    color: #9E6B00; /* Sunflower yellow hue adjusted to meet WCAG 4.5:1 contrast against white */
+    color: #9E6B00; 
   }
   
   /* Hide progress bar on intro screen */
   .topbar { position: relative; z-index: 10; }
+
+  /* Drag and Drop Ranker Styles */
+  .rank-layout {
+    display: flex; flex-direction: column; gap: 32px; width: 100%; max-width: 480px; flex: 1;
+  }
+  .shelves { display: flex; flex-direction: column; gap: 10px; }
+  .shelf {
+    height: 54px; border: 2px dashed var(--panel-line); border-radius: 12px;
+    display: flex; align-items: center; padding: 4px 8px;
+    position: relative; transition: border-color 0.2s, background 0.2s;
+  }
+  .shelf.drag-over { border-color: var(--ink); background: var(--panel); }
+  .shelf-num { font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--ink-faint); width: 28px; text-align: center; flex-shrink: 0; }
+  .shelf-content { flex: 1; height: 100%; display: flex; align-items: center; justify-content: flex-start; }
+
+  .pool {
+    display: flex; flex-wrap: wrap; gap: 10px; padding: 24px;
+    background: var(--panel); border-radius: 16px; border: 2px solid var(--panel-line);
+    min-height: 120px; align-content: flex-start;
+  }
+  .pool-title { width: 100%; font-family: var(--display); font-weight: 600; font-size: 13px; color: var(--ink-soft); margin-bottom: 8px; }
+
+  .dragger-card {
+    padding: 10px 18px; border-radius: 8px; border: 2px solid var(--panel-line);
+    background: var(--bg); font-family: var(--display); font-weight: 700; font-size: 14px;
+    cursor: grab; transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    user-select: none; color: var(--ink); display: flex; align-items: center; justify-content: center;
+  }
+  .dragger-card:active { cursor: grabbing; transform: scale(0.98); }
+  .dragger-card.in-shelf { border-color: transparent; width: 100%; height: 100%; margin: 0; border-radius: 6px; }
 </style>
 </head>
 <body>
@@ -92,18 +122,26 @@
           
           <div class="profile-col" style="margin-top: 32px; align-items: flex-start;">
             <div class="profile-label" style="font-family: var(--display); font-weight: 600; font-size: 12px; color: var(--ink-faint); margin-bottom: 8px;">Your happiness profile</div>
-            <svg id="userFlowerPreview" viewBox="0 0 300 300" width="180" height="180"></svg>
+            <!-- Profile increased by 30% -->
+            <svg id="userFlowerPreview" viewBox="0 0 300 300" width="234" height="234"></svg>
+            <div class="profile-title" id="topValueLabel">Rank all 6 factors to continue</div>
           </div>
         </div>
 
         <div class="right-pane">
-          <div class="rank-content" style="max-width: 100%;">
-            <div class="cards" id="cardList"></div>
-            <div class="profile-title" id="topValueLabel"></div>
+          <div class="rank-layout">
+            <div class="shelves" id="shelvesContainer">
+              <!-- Rendered via JS -->
+            </div>
+            
+            <div class="pool" id="poolContainer">
+              <div class="pool-title">Drag factors to the slots above</div>
+              <!-- Cards rendered via JS -->
+            </div>
           </div>
 
           <div class="bottom-action-bar">
-            <button class="cta" id="toScreen2">Find my matches <span class="arrow">&rarr;</span></button>
+            <button class="cta" id="toScreen2" disabled>Find my matches <span class="arrow">&rarr;</span></button>
           </div>
         </div>
       </div>
@@ -231,7 +269,7 @@ const DYS_MIN=Math.min(...DATA.map(d=>d.dysres));
 const DYS_MAX=Math.max(...DATA.map(d=>d.dysres));
 
 let state={
-  order: FACTORS.map(f=>f.key),
+  order: [null, null, null, null, null, null],
   homeCountry:'', dreamCountryStated:'',
   matches:[], selectedMatch:null,
   compareMode:'mine', screen:0
@@ -319,8 +357,14 @@ function renderFlower(svgEl, values, opts={}){
 }
 
 function userProfileValues(){
-  const n=state.order.length; const vals={};
-  state.order.forEach((key,idx)=>{ vals[key]=1-(idx/(n-1))*0.82; });
+  const vals={};
+  FACTORS.forEach(f => vals[f.key] = 0);
+  const n = 6;
+  state.order.forEach((key,idx)=>{ 
+    if(key) {
+      vals[key]=1-(idx/(n-1))*0.82; 
+    }
+  });
   return vals;
 }
 
@@ -370,58 +414,120 @@ function renderBars(container, values){
   });
 }
 
-// ---------------- SCREEN 1 : cards ----------------
-const cardList=document.getElementById('cardList');
-function renderCards(){
-  cardList.innerHTML='';
-  state.order.forEach((key,idx)=>{
-    const f=FACTORS.find(x=>x.key===key);
-    const row=document.createElement('div');
-    row.className='rank-row';
-    row.innerHTML=`
-      <div class="rank-num-outside">${idx+1}</div>
-      <div class="card" draggable="true" data-key="${key}">
-        <div class="swatch" style="background:${f.hex}"></div>
-        <div class="label">${f.label}</div>
-        <div class="row-controls">
-          <button class="up">&#9650;</button><button class="down">&#9660;</button>
-        </div>
-      </div>`;
-    cardList.appendChild(row);
-    const card=row.querySelector('.card');
+// ---------------- SCREEN 1 : Drag & Drop Setup ----------------
+function initDragAndDrop() {
+  const shelvesContainer = document.getElementById('shelvesContainer');
+  const poolContainer = document.getElementById('poolContainer');
 
-    row.querySelector('.up').addEventListener('click',()=>{
-      if(idx>0){[state.order[idx-1],state.order[idx]]=[state.order[idx],state.order[idx-1]]; renderCards(); updatePreview();}
+  // Generate 6 drop slots
+  for(let i=0; i<6; i++) {
+    const shelf = document.createElement('div');
+    shelf.className = 'shelf';
+    shelf.dataset.index = i;
+    shelf.innerHTML = `<div class="shelf-num">${i+1}</div><div class="shelf-content"></div>`;
+    shelvesContainer.appendChild(shelf);
+
+    shelf.addEventListener('dragover', e => {
+      e.preventDefault();
+      shelf.classList.add('drag-over');
     });
-    row.querySelector('.down').addEventListener('click',()=>{
-      if(idx<state.order.length-1){[state.order[idx+1],state.order[idx]]=[state.order[idx],state.order[idx+1]]; renderCards(); updatePreview();}
+    shelf.addEventListener('dragleave', e => {
+      shelf.classList.remove('drag-over');
     });
-    card.addEventListener('dragstart',()=>{card.classList.add('dragging');});
-    card.addEventListener('dragend',()=>{card.classList.remove('dragging'); syncOrderFromDOM(); renderCards(); updatePreview();});
+    shelf.addEventListener('drop', e => {
+      e.preventDefault();
+      shelf.classList.remove('drag-over');
+      const key = e.dataTransfer.getData('text/plain');
+      const card = document.querySelector(`.dragger-card[data-key="${key}"]`);
+      if(!card) return;
+
+      const content = shelf.querySelector('.shelf-content');
+      if(content.children.length > 0) {
+        const existing = content.children[0];
+        resetCard(existing);
+        poolContainer.appendChild(existing);
+      }
+      
+      content.appendChild(card);
+      styleCardForShelf(card, key);
+      syncOrder();
+    });
+  }
+
+  // Create pool items (neutral visually)
+  FACTORS.forEach(f => {
+    const card = document.createElement('div');
+    card.className = 'dragger-card';
+    card.dataset.key = f.key;
+    card.textContent = f.label;
+    card.draggable = true;
+
+    card.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', f.key);
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', e => {
+      card.classList.remove('dragging');
+    });
+
+    poolContainer.appendChild(card);
+  });
+
+  // Pool Drop logic
+  poolContainer.addEventListener('dragover', e => {
+    e.preventDefault();
+  });
+  poolContainer.addEventListener('drop', e => {
+    e.preventDefault();
+    const key = e.dataTransfer.getData('text/plain');
+    const card = document.querySelector(`.dragger-card[data-key="${key}"]`);
+    if(card) {
+      resetCard(card);
+      poolContainer.appendChild(card);
+      syncOrder();
+    }
   });
 }
-function syncOrderFromDOM(){
-  state.order=[...cardList.querySelectorAll('.card')].map(c=>c.dataset.key);
+
+function styleCardForShelf(card, key) {
+  const f = FACTORS.find(x => x.key === key);
+  card.style.background = f.hex;
+  card.style.borderColor = f.hex;
+  card.classList.add('in-shelf');
 }
-cardList.addEventListener('dragover',(e)=>{
-  e.preventDefault();
-  const dragging=cardList.querySelector('.dragging');
-  if(!dragging) return;
-  const draggingRow=dragging.closest('.rank-row');
-  const rows=[...cardList.querySelectorAll('.rank-row')].filter(r=>r!==draggingRow);
-  const after=rows.find(r=>{
-    const box=r.getBoundingClientRect();
-    return e.clientY < box.top+box.height/2;
+
+function resetCard(card) {
+  card.style.background = 'var(--bg)';
+  card.style.borderColor = 'var(--panel-line)';
+  card.classList.remove('in-shelf');
+}
+
+function syncOrder() {
+  const shelves = document.querySelectorAll('.shelf .shelf-content');
+  state.order = Array.from(shelves).map(s => {
+    if(s.children.length > 0) return s.children[0].dataset.key;
+    return null;
   });
-  if(after) cardList.insertBefore(draggingRow, after); else cardList.appendChild(draggingRow);
-});
+  
+  const cta = document.getElementById('toScreen2');
+  if(state.order.every(k => k !== null)) {
+    cta.disabled = false;
+    const topF = FACTORS.find(f => f.key === state.order[0]);
+    document.getElementById('topValueLabel').textContent = `You value ${topF.label.toLowerCase()} most`;
+  } else {
+    cta.disabled = true;
+    document.getElementById('topValueLabel').textContent = `Rank all 6 factors to continue`;
+  }
+  updatePreview();
+}
+
 function updatePreview(){
   const vals=userProfileValues();
   renderFlower(document.getElementById('userFlowerPreview'), vals, {opacity:0.95, animate:true, minR:10, maxR:36, overlap:1.7});
-  const topF=FACTORS.find(f=>f.key===state.order[0]);
-  document.getElementById('topValueLabel').textContent=`You value ${topF.label.toLowerCase()} most`;
 }
-renderCards(); updatePreview();
+
+initDragAndDrop();
+syncOrder();
 
 // ---------------- SCREEN 2 : matches ----------------
 function computeMatches(){
