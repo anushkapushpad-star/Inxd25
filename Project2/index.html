@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cartoon Narrative Opening</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --paper: #ececec;
+        --ink: #0a0a0a;
+        --blue: #4a5af0;
+        --yellow: #f3d000;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Gabarito", sans-serif;
+        overflow-x: hidden;
+      }
+
+      .story {
+        position: relative;
+      }
+
+      .frame {
+        position: relative;
+        height: 180vh;
+        overflow: hidden;
+      }
+
+      .panel {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .frame-quote .panel::before,
+      .frame-text-1 .panel::before,
+      .frame-text-2 .panel::before,
+      .frame-tv .panel::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("images/background.png");
+        background-size: cover;
+        background-position: center;
+        filter: grayscale(1) brightness(1.15);
+      }
+
+      .frame-tv .panel::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("images/background overlay.png");
+        background-size: cover;
+        background-position: center;
+        opacity: 0.82;
+        mix-blend-mode: multiply;
+      }
+
+      .noise {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(0, 0, 0, 0.08) 0.8px, transparent 0.8px);
+        background-size: 6px 6px;
+        opacity: 0.7;
+        pointer-events: none;
+      }
+
+      .quote-wrap,
+      .text-wrap,
+      .tv-wrap {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .quote-copy {
+        margin: 0;
+        width: min(80vw, 1100px);
+        text-align: center;
+        color: #000;
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: -0.06em;
+        font-size: clamp(2.5rem, 2.8vw, 5.3rem);
+        transform-origin: center;
+      }
+
+      .highlight {
+        display: inline-block;
+        background: var(--yellow);
+        padding: 0.12em 0.18em 0.04em;
+        box-shadow: 0.08em 0.08em 0 rgba(0, 0, 0, 0.06);
+      }
+
+      .lead-copy {
+        margin: 0;
+        width: min(75vw, 950px);
+        text-align: center;
+        color: #000;
+        font-weight: 900;
+        line-height: 0.9;
+        letter-spacing: -0.06em;
+        font-size: clamp(2.6rem, 3vw, 5rem);
+      }
+
+      .small-note {
+        position: absolute;
+        left: 50%;
+        bottom: 10vh;
+        transform: translateX(-50%);
+        text-align: center;
+        color: var(--blue);
+        font-weight: 700;
+        font-size: clamp(1.25rem, 1.8vw, 2.8rem);
+        line-height: 1.1;
+        letter-spacing: -0.05em;
+      }
+
+      .frame-tv .panel {
+        background: rgba(73, 82, 233, 0.8);
+      }
+
+      .tv-stage {
+        position: relative;
+        width: min(76vw, 1080px);
+        aspect-ratio: 1.62;
+        transform: translateY(120px) scale(0.58);
+        opacity: 0;
+      }
+
+      .tv-frame {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 30px 42px rgba(25, 25, 90, 0.45));
+      }
+
+      .tv-screen {
+        position: absolute;
+        left: 12%;
+        right: 12%;
+        top: 16%;
+        bottom: 17%;
+        background: rgba(236, 238, 242, 0.72);
+        border-radius: 10px 10px 4px 4px;
+        box-shadow: inset 0 0 14px rgba(90, 90, 90, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .screen-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .tv-screen-copy {
+        margin: 0;
+        width: min(78%, 760px);
+        text-align: center;
+        color: #000;
+        font-weight: 900;
+        line-height: 1.12;
+        letter-spacing: -0.05em;
+        font-size: clamp(1.6rem, 2vw, 3rem);
+      }
+
+      .tv-note {
+        position: absolute;
+        left: 50%;
+        bottom: 12%;
+        transform: translateX(-50%);
+        color: var(--blue);
+        font-weight: 700;
+        font-size: clamp(1.1rem, 1.6vw, 2.5rem);
+        line-height: 1.15;
+        letter-spacing: -0.04em;
+      }
+
+      @media (max-width: 900px) {
+        .frame {
+          height: 150vh;
+        }
+
+        .quote-copy,
+        .lead-copy {
+          width: min(90vw, 760px);
+        }
+
+        .tv-stage {
+          width: min(92vw, 760px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="story">
+      <section class="frame frame-quote">
+        <div class="panel">
+          <div class="noise"></div>
+          <div class="quote-wrap">
+            <h1 class="quote-copy">
+              “Children are <span class="highlight">great imitators,</span><br />
+              so give them something great<br />
+              to imitate”
+            </h1>
+          </div>
+        </div>
+      </section>
+
+      <section class="frame frame-text-1">
+        <div class="panel">
+          <div class="noise"></div>
+          <div class="text-wrap">
+            <p class="lead-copy">
+              Out of all the content that<br />
+              children absorb, TV cartoons<br />
+              have been a constant
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="frame frame-text-2">
+        <div class="panel">
+          <div class="noise"></div>
+          <div class="text-wrap">
+            <p class="lead-copy">
+              Out of all the content that<br />
+              children absorb, TV cartoons<br />
+              have been a constant
+            </p>
+          </div>
+          <div class="small-note">
+            At least, for generations that came<br />
+            before the OTT boom
+          </div>
+        </div>
+      </section>
+
+      <section class="frame frame-tv">
+        <div class="panel">
+          <div class="noise"></div>
+          <div class="tv-wrap">
+            <div class="tv-stage">
+              <img src="images/tv.png" alt="Retro television" class="tv-frame" />
+              <div class="tv-screen">
+                <div class="screen-inner">
+                  <p class="tv-screen-copy">
+                    Out of all the content that children<br />
+                    absorb, TV cartoons have been a constant
+                  </p>
+                  <div class="tv-note">
+                    At least, for generations that came<br />
+                    before the OTT boom
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const quote = document.querySelector('.quote-copy');
+      const leadBlocks = document.querySelectorAll('.lead-copy');
+      const note = document.querySelector('.small-note');
+      const tvStage = document.querySelector('.tv-stage');
+      const tvNote = document.querySelector('.tv-note');
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function updateScrollEffects() {
+        const vh = window.innerHeight;
+
+        const q = document.querySelector('.frame-quote');
+        const a = document.querySelector('.frame-text-1');
+        const b = document.querySelector('.frame-text-2');
+        const tv = document.querySelector('.frame-tv');
+
+        const qRect = q.getBoundingClientRect();
+        const aRect = a.getBoundingClientRect();
+        const bRect = b.getBoundingClientRect();
+        const tvRect = tv.getBoundingClientRect();
+
+        const qProgress = clamp((vh - qRect.top) / (vh * 1.2), 0, 1);
+        quote.style.transform = `translateY(${qProgress * 26}px) scale(${1 + qProgress * 0.12})`;
+        quote.style.opacity = String(1 - qProgress * 0.9);
+
+        const aProgress = clamp((vh - aRect.top) / (vh * 1.3), 0, 1);
+        leadBlocks[0].style.opacity = String(clamp((aProgress - 0.12) / 0.8, 0, 1));
+        leadBlocks[0].style.transform = `translateY(${(1 - clamp((aProgress - 0.12) / 0.8, 0, 1)) * 24}px)`;
+
+        const bProgress = clamp((vh - bRect.top) / (vh * 1.35), 0, 1);
+        const noteOpacity = clamp((bProgress - 0.2) / 0.7, 0, 1);
+        leadBlocks[1].style.opacity = String(noteOpacity);
+        leadBlocks[1].style.transform = `translateY(${(1 - noteOpacity) * 24}px)`;
+
+        if (note) {
+          note.style.opacity = String(noteOpacity);
+          note.style.transform = `translateX(-50%) translateY(${(1 - noteOpacity) * 18}px)`;
+        }
+
+        const tvProgress = clamp((vh - tvRect.top) / (vh * 1.5), 0, 1);
+        const scale = 0.58 + tvProgress * 0.7;
+        const lift = (1 - tvProgress) * 120;
+        const opacity = clamp(tvProgress * 1.25, 0, 1);
+
+        tvStage.style.transform = `translateY(${lift}px) scale(${scale})`;
+        tvStage.style.opacity = opacity;
+
+        if (tvNote) {
+          const tvNoteOpacity = clamp((tvProgress - 0.15) / 0.7, 0, 1);
+          tvNote.style.opacity = String(tvNoteOpacity);
+          tvNote.style.transform = `translateX(-50%) translateY(${(1 - tvNoteOpacity) * 18}px)`;
+        }
+      }
+
+      window.addEventListener('scroll', updateScrollEffects, { passive: true });
+      window.addEventListener('resize', updateScrollEffects);
+      updateScrollEffects();
+    </script>
+  </body>
+</html>

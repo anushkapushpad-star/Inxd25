@@ -1,0 +1,238 @@
+:root {
+  --paper: #ececec;
+  --ink: #070707;
+  --blue: #4c5af3;
+  --yellow: #f3d300;
+  --tv-red: #b71a1a;
+  --tv-brown: #5f1d18;
+  --screen-glass: #dfe5e8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Gabarito", "Arial Black", sans-serif;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.story {
+  position: relative;
+}
+
+.scene {
+  position: relative;
+  height: 170vh;
+  min-height: 780px;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.panel {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("images/background.png");
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(1) brightness(1.15);
+  opacity: 1;
+}
+
+.scene-quote .panel::after,
+.scene-text .panel::after {
+  display: none;
+}
+
+.tv-panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("images/background overlay.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.82;
+  mix-blend-mode: multiply;
+}
+
+.noise {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.09) 0.8px, transparent 0.8px);
+  background-size: 6px 6px;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.quote-wrap,
+.text-wrap,
+.tv-stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.quote-copy {
+  margin: 0;
+  width: min(78vw, 1100px);
+  text-align: center;
+  font-size: clamp(2.4rem, 3vw, 5.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+  font-weight: 900;
+  color: var(--ink);
+  transform-origin: center;
+}
+
+.quote-copy .highlight {
+  display: inline-block;
+  background: var(--yellow);
+  padding: 0.12em 0.18em 0.03em;
+  box-shadow: 0.08em 0.08em 0 rgba(0, 0, 0, 0.07);
+}
+
+.lead-copy {
+  margin: 0;
+  width: min(72vw, 980px);
+  text-align: center;
+  font-size: clamp(2.5rem, 3vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+  font-weight: 900;
+  color: #000;
+}
+
+.note-copy {
+  position: absolute;
+  bottom: 10vh;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: clamp(1.2rem, 2vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.tv-panel {
+  background: rgba(75, 82, 233, 0.84);
+}
+
+.tv-stage {
+  transform: translateY(120px) scale(0.58);
+  opacity: 0;
+  transition: transform 0.18s ease-out, opacity 0.18s ease-out;
+}
+
+.tv-shell {
+  position: relative;
+  width: min(78vw, 1100px);
+  aspect-ratio: 1.56;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tv-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 32px 38px rgba(14, 18, 87, 0.5));
+}
+
+.tv-screen {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 16%;
+  bottom: 18%;
+  background: rgba(239, 241, 244, 0.72);
+  border-radius: 10px 10px 4px 4px;
+  box-shadow: inset 0 0 18px rgba(61, 67, 83, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.screen-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tv-screen-copy {
+  margin: 0;
+  width: min(72%, 760px);
+  font-size: clamp(1.7rem, 2vw, 3.2rem);
+  line-height: 1.12;
+  letter-spacing: -0.05em;
+  font-weight: 900;
+  color: #000;
+}
+
+.tv-note {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(1.1rem, 1.6vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .panel {
+    min-height: 680px;
+  }
+
+  .quote-copy,
+  .lead-copy {
+    width: min(90vw, 760px);
+  }
+
+  .tv-shell {
+    width: min(90vw, 780px);
+  }
+
+  .tv-screen-copy {
+    width: min(80%, 620px);
+    font-size: clamp(1.3rem, 4vw, 2.2rem);
+  }
+}
