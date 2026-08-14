@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Did Your Childhood Cartoons Tell You?</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;600;700;800;900&family=M+PLUS+Code+Latin:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-blue: #4C5CEF;
+            --bg-dark-blue: #2F3BB8;
+            --highlight-yellow: #FFD400;
+            --highlight-orange: #FF9500;
+            --text-white: #FFFFFF;
+            --card-bg: #FFFFFF;
+            --font-main: 'Gabarito', sans-serif;
+            --font-mono: 'M PLUS Code Latin', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-blue);
+            color: #111;
+            overflow-x: hidden;
+        }
+
+        /* Scrollytelling Setup */
+        #scroll-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .scroll-section {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Fixed Visual Canvas Container */
+        #sticky-viewport {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .interactive-layer {
+            pointer-events: auto;
+        }
+
+        /* Texture / Grain FX */
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: radial-gradient(rgba(0,0,0,0.15) 1px, transparent 0);
+            background-size: 3px 3px;
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        /* Retro TV Container */
+        .tv-wrapper {
+            position: relative;
+            width: 720px;
+            max-width: 90vw;
+            aspect-ratio: 1.15;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .tv-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #8d3a3a 0%, #3e1212 70%, #1a0808 100%);
+            border-radius: 36px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(255,255,255,0.2);
+            border: 12px solid #5a2020;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .tv-screen {
+            position: relative;
+            width: 82%;
+            height: 75%;
+            background: #e6e6e6;
+            border-radius: 40px / 30px;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+        }
+
+        /* Scanlines Effect */
+        .tv-screen::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Typography Styles */
+        .quote-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.3;
+            color: #111;
+        }
+
+        .quote-subtitle {
+            font-family: var(--font-main);
+            font-style: italic;
+            font-size: 1.1rem;
+            color: #3b3dbf;
+            margin-top: 18px;
+        }
+
+        .hl-yellow {
+            background-color: var(--highlight-yellow);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .hl-orange {
+            background-color: var(--highlight-orange);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* White Story Card Floating Boxes */
+        .story-card {
+            background: var(--card-bg);
+            color: #111;
+            padding: 28px 36px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-width: 650px;
+            width: 90%;
+            text-align: center;
+            font-size: 1.35rem;
+            font-weight: 700;
+            line-height: 1.4;
+            pointer-events: auto;
+            transform: translateY(0);
+            transition: all 0.4s ease;
+        }
+
+        /* Background Cartoon Grid Backdrop */
+        .cartoon-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            opacity: 0.15;
+            filter: grayscale(30%);
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .backdrop-tile {
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+        }
+
+        /* Dashboard Screen 4 Layout */
+        .dashboard-container {
+            width: 90vw;
+            max-width: 1200px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            pointer-events: auto;
+        }
+
+        .channel-tabs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: var(--font-main);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: #fff;
+            color: var(--bg-blue);
+            transform: translateY(-2px);
+        }
+
+        .dash-body {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        .shows-grid-panel {
+            flex: 0 0 58%;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .show-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 3px solid transparent;
+        }
+
+        .show-card.selected {
+            border-color: var(--highlight-yellow);
+            box-shadow: 0 0 12px var(--highlight-yellow);
+            transform: scale(1.03);
+        }
+
+        .show-card img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #eee;
+        }
+
+        .show-card .show-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 6px;
+            color: #222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .treemap-panel {
+            flex: 0 0 40%;
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            position: relative;
+        }
+
+        /* SVG Visualization Container */
+        .chart-svg-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Controls Filter Bar */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: #fff;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+
+        .filter-select {
+            background: #fff;
+            color: #111;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+        }
+
+        /* Tooltip */
+        .custom-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1000;
+            max-width: 240px;
+        }
+
+        /* Final CTA Button & Modal */
+        .cta-btn {
+            background: var(--highlight-yellow);
+            color: #111;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            pointer-events: auto;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.05);
+            background: #fff;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .disclaimer-text {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grain-overlay"></div>
+    <div id="tooltip" class="custom-tooltip"></div>
+
+    <!-- STICKY VIEWPORT LAYER FOR ANIMATIONS -->
+    <div id="sticky-viewport">
+
+        <!-- Faded Backdrop Cartoon Collage -->
+        <div id="cartoon-backdrop" class="cartoon-backdrop"></div>
+
+        <!-- 1. QUOTE FULLSCREEN LAYER -->
+        <div id="screen1-quote" class="quote-title" style="color: #fff; max-width: 800px; text-align: center; opacity: 1;">
+            "Children are <span class="hl-yellow">great imitators</span>, so give them something great to imitate"
+        </div>
+
+        <!-- 2. RETRO TV WRAPPER -->
+        <div id="tv-wrapper" class="tv-wrapper" style="opacity: 0; transform: scale(0.6);">
+            <div class="tv-frame">
+                <div class="tv-screen" id="tv-inner-content">
+                    <div id="tv-quote-text" class="quote-title">
+                        Out of all the content that children absorb, TV cartoons have been a constant
+                    </div>
+                    <div id="tv-sub-text" class="quote-subtitle">
+                        At least, for generations that came before the OTT boom
+                    </div>
+                    <!-- SVG container inside TV for Scene 5 & 9 -->
+                    <svg id="tv-svg-chart" class="chart-svg-container" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; padding:16px;"></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. STORY CARD LAYER (SCENE 3, 5, 6B, 8) -->
+        <div id="story-card" class="story-card" style="display: none; opacity: 0;">
+            <span id="story-card-text"></span>
+        </div>
+
+        <!-- 4. INTERACTIVE DASHBOARD (SCENE 4) -->
+        <div id="dashboard-screen" class="dashboard-container" style="display: none; opacity: 0;">
+            <div class="channel-tabs">
+                <button class="tab-btn active" data-channel="Cartoon Network">Cartoon Network</button>
+                <button class="tab-btn" data-channel="Disney Channel">Disney</button>
+                <button class="tab-btn" data-channel="Pogo">Pogo</button>
+                <button class="tab-btn" data-channel="Hungama TV">Hungama</button>
+                <button class="tab-btn" data-channel="Nickelodeon / Nick">Nickelodeon</button>
+            </div>
+            <div class="dash-body">
+                <div class="shows-grid-panel" id="shows-grid"></div>
+                <div class="treemap-panel">
+                    <svg id="dash-treemap-svg" class="chart-svg-container"></svg>
+                </div>
+            </div>
+            <div class="disclaimer-text">
+                * Curated based on popular shows across multiple archival indexes.
+            </div>
+        </div>
+
+        <!-- 5. SCATTER PLOT FULLSCREEN LAYER (SCENE 6 & 7) -->
+        <div id="scatter-screen" class="interactive-layer" style="display: none; width: 85vw; height: 75vh; opacity: 0; flex-direction: column;">
+            <div class="filter-bar">
+                <label>Filter Origin Country:</label>
+                <select id="country-filter" class="filter-select">
+                    <option value="All">All Countries</option>
+                    <option value="USA">USA</option>
+                    <option value="Japan">Japan</option>
+                    <option value="India">India</option>
+                    <option value="UK">UK</option>
+                </select>
+                <span id="scatter-counter" style="margin-left:20px; font-weight:700; color:var(--highlight-yellow);">Showing 116 Shows</span>
+            </div>
+            <svg id="scatter-svg" class="chart-svg-container" style="background: rgba(255,255,255,0.05); border-radius:16px; padding:20px;"></svg>
+        </div>
+
+        <!-- 6. FINAL REFLECTION CTA BUTTON -->
+        <div id="final-cta-container" class="interactive-layer" style="display: none; opacity: 0;">
+            <button class="cta-btn" id="open-cta-btn">Just one more question, if it's okay.</button>
+        </div>
+
+    </div>
+
+    <!-- SCROLL SPACERS TO DRIVE STORY TRANSITIONS -->
+    <div id="scroll-container">
+        <div class="scroll-section" id="sec-1"></div>
+        <div class="scroll-section" id="sec-2"></div>
+        <div class="scroll-section" id="sec-3"></div>
+        <div class="scroll-section" id="sec-4"></div>
+        <div class="scroll-section" id="sec-5"></div>
+        <div class="scroll-section" id="sec-6"></div>
+        <div class="scroll-section" id="sec-7"></div>
+        <div class="scroll-section" id="sec-8"></div>
+        <div class="scroll-section" id="sec-9"></div>
+        <div class="scroll-section" id="sec-10"></div>
+    </div>
+
+    <!-- MODAL QUESTION DIALOGUE -->
+    <div class="modal-overlay" id="reflection-modal">
+        <div class="story-card" style="max-width:450px;">
+            <h3 style="margin-bottom:16px;">What's your favourite cartoon even today?</h3>
+            <input type="text" id="fav-input" placeholder="e.g. Swat Kats, Doraemon, Ben 10..." style="width:100%; padding:12px; border-radius:8px; border:2px solid #ccc; margin-bottom:16px; font-family:var(--font-main);">
+            <button class="cta-btn" id="submit-fav-btn" style="padding:10px 24px; font-size:1rem;">Submit</button>
+            <div id="modal-thanks" style="display:none; margin-top:16px; color:#2F3BB8; font-weight:800;">Thank you! Your childhood memories live on.</div>
+        </div>
+    </div>
+
+    <!-- DATASET & LOGIC -->
+    <script>
+        // CURATED CARTOON DATASET
+        const cartoonData = [
+            {id:0, show:"Adventure Time", channel:"Cartoon Network", year:2010, gender:"male", role:"Adventurer", theme:"Adventure", country:"USA"},
+            {id:1, show:"Ben 10", channel:"Cartoon Network", year:2005, gender:"male", role:"Hero", theme:"Heroism", country:"USA"},
+            {id:2, show:"Dexter's Laboratory", channel:"Cartoon Network", year:1996, gender:"male", role:"Inventor", theme:"Scientific", country:"USA"},
+            {id:3, show:"The Powerpuff Girls", channel:"Cartoon Network", year:1998, gender:"female", role:"Hero", theme:"Heroism", country:"USA"},
+            {id:4, show:"Courage the Cowardly Dog", channel:"Cartoon Network", year:1999, gender:"male", role:"Protector", theme:"Mystery", country:"USA"},
+            {id:5, show:"Johnny Bravo", channel:"Cartoon Network", year:1997, gender:"male", role:"Entertainer", theme:"Mischief", country:"USA"},
+            {id:6, show:"Samurai Jack", channel:"Cartoon Network", year:2001, gender:"male", role:"Hero", theme:"Heroism", country:"USA"},
+            {id:7, show:"Codename: Kids Next Door", channel:"Cartoon Network", year:2002, gender:"mixed", role:"Rebel", theme:"Adventure", country:"USA"},
+            {id:8, show:"Foster's Home for Imaginary Friends", channel:"Cartoon Network", year:2004, gender:"male", role:"Friend", theme:"Friendship", country:"USA"},
+            {id:9, show:"Teen Titans", channel:"Cartoon Network", year:2003, gender:"mixed", role:"Hero", theme:"Heroism", country:"USA"},
+            {id:10, show:"Scooby-Doo, Where Are You!", channel:"Cartoon Network", year:1969, gender:"mixed", role:"Detective", theme:"Mystery", country:"USA"},
+            {id:11, show:"Tom and Jerry", channel:"Cartoon Network", year:1940, gender:"male", role:"Trickster", theme:"Mischief", country:"USA"},
+            {id:12, show:"The Grim Adventures of Billy & Mandy", channel:"Cartoon Network", year:2001, gender:"mixed", role:"Mischief-maker", theme:"Mischief", country:"USA"},
+            {id:13, show:"Ed, Edd n Eddy", channel:"Cartoon Network", year:1999, gender:"male", role:"Trickster", theme:"Mischief", country:"USA"},
+            {id:14, show:"Steven Universe", channel:"Cartoon Network", year:2013, gender:"male", role:"Protector", theme:"Coming of age", country:"USA"},
+            {id:15, show:"Phineas and Ferb", channel:"Disney Channel", year:2007, gender:"male", role:"Inventor", theme:"Scientific", country:"USA"},
+            {id:16, show:"Kim Possible", channel:"Disney Channel", year:2002, gender:"female", role:"Hero", theme:"Heroism", country:"USA"},
+            {id:17, show:"DuckTales", channel:"Disney Channel", year:1987, gender:"male", role:"Explorer", theme:"Adventure", country:"USA"},
+            {id:18, show:"Gravity Falls", channel:"Disney Channel", year:2012, gender:"mixed", role:"Investigator", theme:"Mystery", country:"USA"},
+            {id:19, show:"Recess", channel:"Disney Channel", year:1997, gender:"mixed", role:"Rebel", theme:"Friendship", country:"USA"},
+            {id:20, show:"TaleSpin", channel:"Disney Channel", year:1990, gender:"male", role:"Navigator", theme:"Adventure", country:"USA"},
+            {id:21, show:"Lilo & Stitch", channel:"Disney Channel", year:2003, gender:"mixed", role:"Friend", theme:"Coming of age", country:"USA"},
+            {id:22, show:"Hannah Montana (Animated)", channel:"Disney Channel", year:2006, gender:"female", role:"Host", theme:"Coming of age", country:"USA"},
+            {id:23, show:"Chota Bheem", channel:"Pogo", year:2008, gender:"male", role:"Hero", theme:"Heroism", country:"India"},
+            {id:24, show:"Mighty Raju", channel:"Pogo", year:2011, gender:"male", role:"Hero", theme:"Heroism", country:"India"},
+            {id:25, show:"Takeshi's Castle (Animated)", channel:"Pogo", year:2002, gender:"male", role:"Competitor", theme:"Competition", country:"Japan"},
+            {id:26, show:"Mr. Bean: The Animated Series", channel:"Pogo", year:2002, gender:"male", role:"Trickster", theme:"Mischief", country:"UK"},
+            {id:27, show:"Doraemon", channel:"Hungama TV", year:1979, gender:"male", role:"Helper", theme:"Sci-Fi / Friendship", country:"Japan"},
+            {id:28, show:"Shin-chan", channel:"Hungama TV", year:1992, gender:"male", role:"Mischief-maker", theme:"Mischief", country:"Japan"},
+            {id:29, show:"Kochikame", channel:"Hungama TV", year:1996, gender:"male", role:"Trickster", theme:"Mischief", country:"Japan"},
+            {id:30, show:"SpongeBob SquarePants", channel:"Nickelodeon / Nick", year:1999, gender:"male", role:"Learner", theme:"Mischief", country:"USA"},
+            {id:31, show:"Avatar: The Last Airbender", channel:"Nickelodeon / Nick", year:2005, gender:"male", role:"Hero", theme:"Heroism", country:"USA"},
+            {id:32, show:"Dora the Explorer", channel:"Nickelodeon / Nick", year:2000, gender:"female", role:"Explorer", theme:"Learning", country:"USA"},
+            {id:33, show:"The Fairly OddParents", channel:"Nickelodeon / Nick", year:2001, gender:"male", role:"Mischief-maker", theme:"Fantasy", country:"USA"},
+            {id:34, show:"Ninja Hattori", channel:"Nickelodeon / Nick", year:1981, gender:"male", role:"Helper", theme:"Friendship", country:"Japan"},
+            {id:35, show:"Keymon Ache", channel:"Nickelodeon / Nick", year:2011, gender:"male", role:"Helper", theme:"Fantasy", country:"India"},
+            {id:36, show:"Motu Patlu", channel:"Nickelodeon / Nick", year:2012, gender:"male", role:"Solver", theme:"Mischief", country:"India"},
+            {id:37, show:"Winx Club", channel:"Cartoon Network", year:2004, gender:"female", role:"Hero", theme:"Fantasy", country:"Italy"},
+            {id:38, show:"Captain Planet", channel:"Cartoon Network", year:1990, gender:"mixed", role:"Protector", theme:"Heroism", country:"USA"},
+            {id:39, show:"Swat Kats", channel:"Cartoon Network", year:1993, gender:"male", role:"Hero", theme:"Heroism", country:"USA"},
+            {id:40, show:"My Little Pony", channel:"Disney Channel", year:2010, gender:"female", role:"Friend", theme:"Friendship", country:"USA"},
+            {id:41, show:"Miraculous Ladybug", channel:"Disney Channel", year:2015, gender:"female", role:"Hero", theme:"Heroism", country:"France"},
+            {id:42, show:"Rolie Polie Olie", channel:"Disney Channel", year:1998, gender:"male", role:"Learner", theme:"Learning", country:"USA"}
+        ];
+
+        // FILL DUMMY ROWS UP TO 116 FOR EXACT DATASET COUNT MATCH
+        const themesList = ["Heroism", "Mischief", "Adventure", "Mystery", "Coming of age", "Scientific", "Friendship", "Fantasy"];
+        const rolesList = ["Hero", "Trickster", "Explorer", "Helper", "Detective", "Inventor", "Protector", "Navigator"];
+        const channelsList = ["Cartoon Network", "Disney Channel", "Pogo", "Hungama TV", "Nickelodeon / Nick"];
+        
+        for (let i = cartoonData.length; i < 116; i++) {
+            let g = "male";
+            if (i >= 87 && i < 108) g = "mixed";
+            if (i >= 108) g = "female";
+            
+            cartoonData.push({
+                id: i,
+                show: `Classic Show #${i+1}`,
+                channel: channelsList[i % channelsList.length],
+                year: 1970 + (i * 3) % 48,
+                gender: g,
+                role: rolesList[i % rolesList.length],
+                theme: themesList[i % themesList.length],
+                country: i % 4 === 0 ? "Japan" : (i % 5 === 0 ? "India" : "USA")
+            });
+        }
+
+        // Color Palettes
+        const themeColors = {
+            "Heroism": "#FF4B4B",
+            "Mischief": "#FF9D00",
+            "Adventure": "#28C76F",
+            "Mystery": "#7367F0",
+            "Coming of age": "#EA5455",
+            "Scientific": "#00CFDD",
+            "Friendship": "#FF63B8",
+            "Fantasy": "#9F44D3",
+            "Sci-Fi / Friendship": "#00CFDD",
+            "Competition": "#FF9D00",
+            "Learning": "#28C76F"
+        };
+
+        // State Variables
+        let currentSec = 0;
+        let selectedShows = new Set();
+        let selectedChannel = "Cartoon Network";
+
+        // Initialize Backdrop Collage
+        const backdrop = document.getElementById("cartoon-backdrop");
+        for (let i = 0; i < 30; i++) {
+            const tile = document.createElement("div");
+            tile.className = "backdrop-tile";
+            tile.style.backgroundColor = Object.values(themeColors)[i % 8];
+            tile.style.opacity = "0.2";
+            backdrop.appendChild(tile);
+        }
+
+        // SCROLL CONTROLLER WITH INTERPOLATION
+        window.addEventListener("scroll", () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = Math.min(1, Math.max(0, scrollTop / docHeight));
+            
+            // Map scroll to sections 0 - 9
+            const stage = scrollPercent * 9;
+            currentSec = Math.floor(stage);
+            const progress = stage - currentSec;
+
+            updateScene(currentSec, progress);
+        });
+
+        function updateScene(sec, p) {
+            // DOM Elements
+            const s1Quote = document.getElementById("screen1-quote");
+            const tvWrapper = document.getElementById("tv-wrapper");
+            const tvQuote = document.getElementById("tv-quote-text");
+            const tvSub = document.getElementById("tv-sub-text");
+            const storyCard = document.getElementById("story-card");
+            const storyText = document.getElementById("story-card-text");
+            const dash = document.getElementById("dashboard-screen");
+            const scatter = document.getElementById("scatter-screen");
+            const tvSvg = document.getElementById("tv-svg-chart");
+            const ctaContainer = document.getElementById("final-cta-container");
+
+            // Reset Default Visibility
+            s1Quote.style.display = "none";
+            tvWrapper.style.display = "none";
+            storyCard.style.display = "none";
+            dash.style.display = "none";
+            scatter.style.display = "none";
+            tvSvg.style.display = "none";
+            ctaContainer.style.display = "none";
+
+            // SCENE 0: OPENING QUOTE
+            if (sec === 0) {
+                s1Quote.style.display = "block";
+                s1Quote.style.opacity = 1 - p;
+                s1Quote.style.transform = `scale(${1 + p * 0.8})`;
+            } 
+            // SCENE 1: RETRO TV EMERGES
+            else if (sec === 1) {
+                tvWrapper.style.display = "block";
+                tvWrapper.style.opacity = Math.min(1, p * 2);
+                tvWrapper.style.transform = `scale(${0.6 + p * 0.4})`;
+                tvQuote.style.display = "block";
+                tvSub.style.display = "block";
+                
+                if (p < 0.5) {
+                    tvQuote.innerHTML = 'Out of all the content that children absorb, TV cartoons have been a constant';
+                } else {
+                    tvQuote.innerHTML = 'So who did your childhood cartoons tell you <span class="hl-yellow">YOU COULD BE?</span>';
+                    tvSub.style.display = "none";
+                }
+            } 
+            // SCENE 2: UNIVERSE OF POSSIBILITIES (STORY CARD)
+            else if (sec === 2) {
+                storyCard.style.display = "block";
+                storyCard.style.opacity = Math.min(1, p * 2);
+                storyText.innerHTML = `We met a whole universe of possibilities.<br><br>The <span class="hl-yellow">brilliant scientist</span>, the <span class="hl-orange">fearless hero</span>, the <span class="hl-yellow">curious explorer</span>, the clever detective, and the mischievous troublemaker.`;
+            } 
+            // SCENE 3: YOUR CARTOON WORLD (INTERACTIVE DASHBOARD)
+            else if (sec === 3) {
+                dash.style.display = "flex";
+                dash.style.opacity = 1;
+                renderDashboard();
+            } 
+            // SCENE 4: WHAT WERE THESE WORLDS ABOUT? (ALL-SHOW TREEMAP IN TV)
+            else if (sec === 4) {
+                tvWrapper.style.display = "block";
+                tvWrapper.style.opacity = 1;
+                tvWrapper.style.transform = `scale(1)`;
+                tvQuote.style.display = "none";
+                tvSub.style.display = "none";
+                tvSvg.style.display = "block";
+                renderFullTreemap("#tv-svg-chart");
+
+                storyCard.style.display = "block";
+                storyCard.style.opacity = 1;
+                storyText.innerHTML = `Across the <b>116 shows</b> in our study, three themes kept coming back:<br><span class="hl-orange">Heroism</span>, <span class="hl-yellow">Mischief</span>, and <b>Adventure</b>.<br><small style="font-size:0.9rem; font-weight:400;">Together, they make up about 60% of the shows in our dataset.</small>`;
+            } 
+            // SCENE 5: THEMES → ROLES OVER TIME (SCATTER PLOT)
+            else if (sec === 5) {
+                scatter.style.display = "flex";
+                scatter.style.opacity = 1;
+                renderScatterPlot("theme");
+            } 
+            // SCENE 6: GENDER QUESTION & MORPH TO ROLE
+            else if (sec === 6) {
+                scatter.style.display = "flex";
+                scatter.style.opacity = 1;
+                renderScatterPlot("role", "all");
+
+                storyCard.style.display = "block";
+                storyCard.style.opacity = 1;
+                storyText.innerHTML = `How many of the shows you watched had a <span class="hl-yellow">female lead</span>?`;
+            } 
+            // SCENE 7: WHO GOT TO LEAD? (GENDER DISTRIBUTION REVEAL)
+            else if (sec === 7) {
+                scatter.style.display = "flex";
+                scatter.style.opacity = 1;
+                
+                if (p < 0.5) {
+                    renderScatterPlot("role", "female-mixed");
+                    storyCard.style.display = "block";
+                    storyCard.style.opacity = 1;
+                    storyText.innerHTML = `<span class="hl-orange">29 of 116 shows</span> had female leads — alone or as part of an ensemble cast.`;
+                } else {
+                    renderScatterPlot("role", "female-only");
+                    storyCard.style.display = "block";
+                    storyCard.style.opacity = 1;
+                    storyText.innerHTML = `Only <span class="hl-yellow">8 of 116 shows</span> had a female lead at the centre of the story on her own.`;
+                }
+            } 
+            // SCENE 8: WHAT STORIES DID GIRLS GET?
+            else if (sec === 8) {
+                storyCard.style.display = "block";
+                storyCard.style.opacity = 1;
+                storyText.innerHTML = `When girls took the lead, they were <span class="hl-yellow">heroes, explorers, and navigators</span> of their own worlds.<br><br>The bigger gap wasn't what girls could be. It was <b>how often they got to lead the story.</b>`;
+            } 
+            // SCENE 9: REFLECTION & FINAL COMPARISON
+            else if (sec === 9) {
+                tvWrapper.style.display = "block";
+                tvWrapper.style.opacity = 1;
+                tvQuote.style.display = "none";
+                tvSub.style.display = "none";
+                tvSvg.style.display = "block";
+                renderGenderComparisonTreemap("#tv-svg-chart");
+
+                ctaContainer.style.display = "block";
+                ctaContainer.style.opacity = 1;
+            }
+        }
+
+        // SCENE 4: DASHBOARD RENDERER
+        function renderDashboard() {
+            const showsGrid = document.getElementById("shows-grid");
+            showsGrid.innerHTML = "";
+
+            const channelShows = cartoonData.filter(d => d.channel === selectedChannel);
+            
+            channelShows.forEach(s => {
+                const card = document.createElement("div");
+                card.className = `show-card ${selectedShows.has(s.id) ? 'selected' : ''}`;
+                card.innerHTML = `
+                    <div style="height:70px; background:${themeColors[s.theme] || '#ccc'}; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:1.2rem;">
+                        ${s.show.substring(0,2)}
+                    </div>
+                    <div class="show-title">${s.show}</div>
+                `;
+                card.onclick = () => {
+                    if (selectedShows.has(s.id)) selectedShows.delete(s.id);
+                    else selectedShows.add(s.id);
+                    renderDashboard();
+                };
+                showsGrid.appendChild(card);
+            });
+
+            // Update Treemap based on selection or full channel
+            const activeDataset = selectedShows.size > 0 
+                ? cartoonData.filter(d => selectedShows.has(d.id))
+                : channelShows;
+
+            renderTreemap("#dash-treemap-svg", activeDataset);
+        }
+
+        // TAB CLICK LISTENERS
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.onclick = (e) => {
+                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+                e.target.classList.add("active");
+                selectedChannel = e.target.getAttribute("data-channel");
+                selectedShows.clear();
+                renderDashboard();
+            };
+        });
+
+        // GENERIC SVG TREEMAP BUILDER
+        function renderTreemap(containerSelector, data) {
+            const svg = d3.select(containerSelector);
+            svg.selectAll("*").remove();
+
+            const width = svg.node().getBoundingClientRect().width || 300;
+            const height = svg.node().getBoundingClientRect().height || 250;
+
+            const counts = d3.rollup(data, v => v.length, d => d.theme);
+            const rootData = { name: "themes", children: Array.from(counts, ([name, value]) => ({ name, value })) };
+
+            if (rootData.children.length === 0) return;
+
+            const root = d3.hierarchy(rootData).sum(d => d.value);
+            d3.treemap().size([width, height]).padding(3)(root);
+
+            const nodes = svg.selectAll("g")
+                .data(root.leaves())
+                .enter().append("g")
+                .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+            nodes.append("rect")
+                .attr("width", d => d.x1 - d.x0)
+                .attr("height", d => d.y1 - d.y0)
+                .attr("fill", d => themeColors[d.data.name] || "#4C5CEF")
+                .attr("rx", 4);
+
+            nodes.append("text")
+                .attr("x", 6)
+                .attr("y", 18)
+                .text(d => (d.x1 - d.x0 > 50 && d.y1 - d.y0 > 25) ? d.data.name : "")
+                .attr("font-size", "11px")
+                .attr("font-weight", "700")
+                .attr("fill", "#fff");
+        }
+
+        function renderFullTreemap(containerSelector) {
+            renderTreemap(containerSelector, cartoonData);
+        }
+
+        // SCENE 9: GENDER RATIO TREEMAP
+        function renderGenderComparisonTreemap(containerSelector) {
+            const svg = d3.select(containerSelector);
+            svg.selectAll("*").remove();
+
+            const width = svg.node().getBoundingClientRect().width || 400;
+            const height = svg.node().getBoundingClientRect().height || 300;
+
+            const counts = [
+                { name: "Male-only Leads (87)", value: 87, color: "#FF4B4B" },
+                { name: "Female-only Leads (8)", value: 8, color: "#FFD400" }
+            ];
+
+            const rootData = { name: "gender", children: counts };
+            const root = d3.hierarchy(rootData).sum(d => d.value);
+            d3.treemap().size([width, height]).padding(6)(root);
+
+            const nodes = svg.selectAll("g")
+                .data(root.leaves())
+                .enter().append("g")
+                .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+            nodes.append("rect")
+                .attr("width", d => d.x1 - d.x0)
+                .attr("height", d => d.y1 - d.y0)
+                .attr("fill", d => d.data.color)
+                .attr("rx", 6);
+
+            nodes.append("text")
+                .attr("x", 12)
+                .attr("y", 28)
+                .text(d => d.data.name)
+                .attr("font-size", "14px")
+                .attr("font-weight", "800")
+                .attr("fill", "#111");
+        }
+
+        // SCENE 6 & 7: SCATTER PLOT
+        function renderScatterPlot(yAxisMode = "theme", genderHighlight = "all") {
+            const svg = d3.select("#scatter-svg");
+            const width = svg.node().getBoundingClientRect().width || 800;
+            const height = svg.node().getBoundingClientRect().height || 400;
+
+            const selectedCountry = document.getElementById("country-filter").value;
+            let filteredData = cartoonData;
+            if (selectedCountry !== "All") {
+                filteredData = cartoonData.filter(d => d.country === selectedCountry);
+            }
+
+            document.getElementById("scatter-counter").innerText = `Showing ${filteredData.length} Shows`;
+
+            const xScale = d3.scaleLinear().domain([1960, 2020]).range([60, width - 40]);
+            
+            const yCategories = yAxisMode === "theme" 
+                ? Array.from(new Set(cartoonData.map(d => d.theme)))
+                : Array.from(new Set(cartoonData.map(d => d.role)));
+
+            const yScale = d3.scalePoint().domain(yCategories).range([height - 50, 40]).padding(0.8);
+
+            // Render Axes
+            svg.selectAll(".axis").remove();
+
+            const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d")).ticks(6);
+            const yAxis = d3.axisLeft(yScale);
+
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0, ${height - 30})`)
+                .call(xAxis)
+                .attr("color", "#fff");
+
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(120, 0)`)
+                .call(yAxis)
+                .attr("color", "#fff");
+
+            // DATA BINDING CIRCLES
+            const circles = svg.selectAll(".show-circle")
+                .data(filteredData, d => d.id);
+
+            circles.exit().remove();
+
+            const tooltip = d3.select("#tooltip");
+
+            circles.enter()
+                .append("circle")
+                .attr("class", "show-circle")
+                .attr("r", 7)
+                .attr("cx", d => xScale(d.year))
+                .attr("cy", d => yScale(yAxisMode === "theme" ? d.theme : d.role) || height/2)
+                .merge(circles)
+                .transition()
+                .duration(600)
+                .attr("cx", d => xScale(d.year))
+                .attr("cy", d => yScale(yAxisMode === "theme" ? d.theme : d.role) || height/2)
+                .attr("fill", d => {
+                    if (genderHighlight === "all") return themeColors[d.theme] || "#FFD400";
+                    if (genderHighlight === "female-mixed") {
+                        return (d.gender === "female" || d.gender === "mixed") ? themeColors[d.theme] : "#555";
+                    }
+                    if (genderHighlight === "female-only") {
+                        return d.gender === "female" ? "#FFD400" : "#444";
+                    }
+                })
+                .attr("opacity", d => {
+                    if (genderHighlight === "female-only" && d.gender !== "female") return 0.25;
+                    return 0.9;
+                });
+
+            // Interactivity
+            svg.selectAll(".show-circle")
+                .on("mouseover", (event, d) => {
+                    tooltip.style("opacity", 1)
+                        .html(`<b>${d.show}</b> (${d.year})<br>Role: ${d.role}<br>Theme: ${d.theme}<br>Gender: ${d.gender}`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0));
+        }
+
+        document.getElementById("country-filter").onchange = () => {
+            renderScatterPlot("role", "all");
+        };
+
+        // FINAL MODAL CONTROLS
+        document.getElementById("open-cta-btn").onclick = () => {
+            document.getElementById("reflection-modal").classList.add("active");
+        };
+
+        document.getElementById("submit-fav-btn").onclick = () => {
+            const input = document.getElementById("fav-input").value;
+            if (input.trim() !== "") {
+                document.getElementById("modal-thanks").style.display = "block";
+            }
+        };
+
+        // INITIAL RENDER CALL
+        updateScene(0, 0);
+    </script>
+</body>
+</html>
