@@ -1,0 +1,10 @@
+Drop poster images here, named exactly to match the "Poster Name" column
+in the CSV — e.g. Adventure Time's poster name is "AT", so the file should
+be assets/posters/AT.png (or .jpg — see script.js posterTile() if you need
+to support a different extension).
+
+Only 31 of 116 shows currently have a Poster Name in the dataset. Any show
+without one — or whose image fails to load — automatically falls back to
+a lettered placeholder tile, per the spec ("use a clearly marked placeholder
+rather than fabricating an image"). No image files were invented for this
+build.

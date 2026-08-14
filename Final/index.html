@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Who Did Your Cartoons Tell You You Could Be?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800;900&family=M+PLUS+Code+Latin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="grain-overlay" aria-hidden="true"></div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 1 — OPENING QUOTE -->
+<!-- ============================================================ -->
+<section class="scene scene--pin" id="scene-1" data-scene="1">
+  <div class="scene__pin scene__pin--white">
+    <div class="s1__quote" id="s1-quote">
+      <p class="s1__quote-text">
+        <span>&ldquo;Children are</span>
+        <span class="hl hl--yellow"> great imitators,</span><br>
+        <span>so give them something great</span><br>
+        <span>to imitate&rdquo;</span>
+      </p>
+    </div>
+    <div class="s1__sentence" id="s1-sentence" aria-hidden="true">
+      <p class="s1__sentence-text" id="s1-sentence-text">Out of all the content that children absorb, TV cartoons have been a constant</p>
+      <p class="s1__subline">Atleast, for generations that came before the OTT boom</p>
+    </div>
+  </div>
+  <div class="scene__spacer" style="--h:280vh;"></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCREEN 2 — THE TELEVISION -->
+<!-- ============================================================ -->
+<section class="scene scene--pin" id="scene-2" data-scene="2">
+  <div class="scene__pin">
+    <div class="s2__collage" id="s2-collage" aria-hidden="true"></div>
+    <div class="s2__tv-wrap" id="s2-tv-wrap">
+      <img class="s2__tv-img" src="assets/tv-transparent.png" alt="A retro cathode-ray-tube television set">
+      <div class="s2__tv-screen">
+        <p class="s2__tv-text" id="s2-tv-text">Out of all the content that children absorb, TV cartoons have been a constant</p>
+        <p class="s2__tv-subline" id="s2-tv-subline">Atleast, for generations that came before the OTT boom</p>
+        <p class="s2__tv-question" id="s2-tv-question" aria-hidden="true">Who did your childhood cartoons tell you, <span class="hl hl--blue">YOU COULD BE?</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="scene__spacer" style="--h:320vh;"></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCREEN 3 — UNIVERSE OF POSSIBILITIES -->
+<!-- ============================================================ -->
+<section class="scene scene--pin" id="scene-3" data-scene="3">
+  <div class="scene__pin">
+    <div class="s2__collage s3__collage" aria-hidden="true"></div>
+    <div class="s3__box" id="s3-box">
+      <p class="s3__lead">We met a whole universe of possibilities.</p>
+      <p class="s3__body">The brilliant <span class="hl hl--orange">scientist</span>, the fearless <span class="hl hl--yellow">hero</span>, the curious <span class="hl hl--orange">explorer</span>, the clever <span class="hl hl--yellow">detective</span>, the mischievous <span class="hl hl--orange">troublemaker</span> and more.</p>
+    </div>
+    <p class="s3__headline" id="s3-headline">Different characters. Different worlds.<br>Different possibilities.</p>
+  </div>
+  <div class="scene__spacer" style="--h:220vh;"></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCREEN 4 — YOUR CARTOON WORLD -->
+<!-- ============================================================ -->
+<section class="scene scene--flow" id="scene-4" data-scene="4">
+  <p class="section-kicker">So, what were <span class="hl hl--orange">your</span> early cartoons really about?</p>
+
+  <div class="s4__tabs" role="tablist" aria-label="Choose a TV channel">
+    <button class="s4__tab is-active" role="tab" aria-selected="true" data-channel="Cartoon Network">Cartoon Network</button>
+    <button class="s4__tab" role="tab" aria-selected="false" data-channel="Disney Channel">Disney</button>
+    <button class="s4__tab" role="tab" aria-selected="false" data-channel="Pogo">Pogo</button>
+    <button class="s4__tab" role="tab" aria-selected="false" data-channel="Hungama TV">Hungama</button>
+    <button class="s4__tab" role="tab" aria-selected="false" data-channel="Nickelodeon / Nick">Nickelodeon</button>
+  </div>
+
+  <div class="s4__layout">
+    <div class="s4__left">
+      <div class="s4__grid" id="s4-grid" role="list" aria-label="Shows on selected channel"></div>
+      <div class="s4__pager">
+        <button class="s4__pager-btn" id="s4-prev" aria-label="Previous page">&#8249;</button>
+        <span class="s4__pager-label" id="s4-pager-label">1 / 1</span>
+        <button class="s4__pager-btn" id="s4-next" aria-label="Next page">&#8250;</button>
+      </div>
+      <p class="s4__disclaimer">This list of shows is not exhaustive. It is curated based on the most popular shows recorded across multiple websites.</p>
+    </div>
+    <div class="s4__right">
+      <div class="s4__tv-wrap">
+        <img class="s4__tv-img" src="assets/tv-transparent.png" alt="" aria-hidden="true">
+        <div class="s4__tv-screen">
+          <svg id="s4-treemap" viewBox="0 0 400 300" preserveAspectRatio="none" aria-label="Treemap of themes among your selected shows" role="img"></svg>
+          <p class="s4__tv-empty" id="s4-tv-empty">Tap a cartoon to build your world</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCREEN 5 — WHAT WERE THESE WORLDS ABOUT -->
+<!-- ============================================================ -->
+<section class="scene scene--pin" id="scene-5" data-scene="5">
+  <div class="scene__pin">
+    <p class="section-kicker section-kicker--dark" id="s5-kicker">So, what were <span class="hl hl--orange">our</span> cartoons really about?</p>
+    <div class="s5__tv-wrap" id="s5-tv-wrap">
+      <img class="s5__tv-img" src="assets/tv-transparent.png" alt="" aria-hidden="true">
+      <div class="s5__tv-screen" id="s5-tv-screen"></div>
+    </div>
+    <div class="s5__box" id="s5-box">
+      <p class="s5__lead">Across the 116 shows in our study, three themes kept coming back:</p>
+      <p class="s5__big hl hl--orange">Heroism, Mischief, Adventure.</p>
+      <p class="s5__body">Together, they account for nearly 3 in 5 shows in our dataset.</p>
+    </div>
+  </div>
+  <div class="scene__spacer" style="--h:260vh;"></div>
+</section>
+
+<!-- Standalone full treemap reveal, in normal flow so it can be examined -->
+<section class="scene scene--flow scene--dark" id="scene-5b">
+  <div class="s5b__wrap">
+    <svg id="s5b-treemap" viewBox="0 0 800 420" preserveAspectRatio="xMidYMid meet" aria-label="Treemap of themes across all 116 shows" role="img"></svg>
+  </div>
+  <p class="s5b__caption">Diversity of themes in our cartoons</p>
+  <div class="legend" id="s5b-legend" aria-hidden="true"></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCREEN 6 — THEMES -> ROLES OVER TIME -->
+<!-- ============================================================ -->
+<section class="scene scene--pin" id="scene-6" data-scene="6">
+  <div class="scene__pin scene__pin--scatter">
+    <p class="scatter__title" id="s6-title">Diversity of themes in cartoons</p>
+    <div class="scatter__wrap">
+      <svg id="scatter-svg" viewBox="0 0 900 480" preserveAspectRatio="xMidYMid meet" aria-label="Scatter plot of shows by release decade" role="img"></svg>
+      <div class="scatter__tooltip" id="scatter-tooltip" role="status" aria-live="polite"></div>
+    </div>
+    <div class="legend legend--scatter" id="scatter-legend"></div>
+
+    <div class="scatter__card" id="s6b-card">
+      <p class="scatter__card-text">How many of the shows you watched had a <span class="hl hl--blue">female lead?</span></p>
+    </div>
+
+    <div class="scatter__stat" id="s7-stat">
+      <p class="scatter__stat-eyebrow">Fact one</p>
+      <p class="scatter__stat-num hl hl--orange" id="s7-stat-num">29 of 116</p>
+      <p class="scatter__stat-body">Shows had female leads, either alone or as part of a mixed lead cast.</p>
+    </div>
+
+    <div class="scatter__filter" id="s7-filter">
+      <label for="s7-country">Filter by country of origin</label>
+      <select id="s7-country">
+        <option value="">All countries</option>
+      </select>
+      <p class="scatter__filter-count" id="s7-filter-count" aria-live="polite"></p>
+    </div>
+  </div>
+  <div class="scene__spacer" style="--h:480vh;"></div>
+</section>
+
+<div class="detail-panel" id="detail-panel" aria-live="polite">
+  <button class="detail-panel__close" id="detail-panel-close" aria-label="Close detail panel">&times;</button>
+  <div id="detail-panel-body"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 8 — WHAT STORIES DID GIRLS GET -->
+<!-- ============================================================ -->
+<section class="scene scene--flow scene--dark" id="scene-8">
+  <div class="s8__box">
+    <p class="s8__lead">When girls took the lead, they weren't just one thing.</p>
+    <p class="s8__body">They were <span class="hl hl--yellow">heroes, explorers and navigators</span> of their own worlds.</p>
+    <p class="s8__body">But there were far fewer of these stories to begin with.</p>
+  </div>
+  <p class="s8__insight">The bigger gap wasn't what girls could be. <span class="hl hl--orange">It was how often they got to lead the story.</span></p>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCREEN 9 — REFLECTION & ENDING -->
+<!-- ============================================================ -->
+<section class="scene scene--pin" id="scene-9" data-scene="9">
+  <div class="scene__pin">
+    <div class="s9__tv-wrap" id="s9-tv-wrap">
+      <img class="s9__tv-img" src="assets/tv-transparent.png" alt="" aria-hidden="true">
+      <div class="s9__tv-screen">
+        <svg id="s9-treemap" viewBox="0 0 400 260" preserveAspectRatio="none" aria-label="Comparison of male-only and female-only lead shows" role="img"></svg>
+      </div>
+    </div>
+    <div class="s9__text" id="s9-text">
+      <p class="s9__line" data-line="0">We don't remember every episode we watched as children.</p>
+      <p class="s9__line" data-line="1">But we remember the characters.</p>
+      <p class="s9__line s9__line--list" data-line="2">The ones who were brave.<br>The ones who were clever.<br>The ones who caused trouble.<br>The ones who saved the day.</p>
+      <p class="s9__line" data-line="3">Across four decades, these characters filled our afternoons with possibilities of who we could be.<br><span class="hl hl--yellow">But those possibilities were not distributed equally.</span></p>
+      <p class="s9__line" data-line="4">Some characters were repeatedly given the power to explore, invent, fight, compete and lead.</p>
+      <p class="s9__line" data-line="5">Others were more often placed in worlds of friendship, family, magic or care.</p>
+      <p class="s9__line s9__line--final" data-line="6"><span class="hl hl--yellow">Cartoons don't decide who we become.</span><br>But when some characters get to lead, explore and save the day more often — <span class="hl hl--yellow">who do we imagine we can be?</span></p>
+    </div>
+  </div>
+  <div class="scene__spacer" style="--h:440vh;"></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FINAL CTA -->
+<!-- ============================================================ -->
+<section class="scene scene--flow scene--dark" id="scene-cta">
+  <button class="cta__trigger" id="cta-trigger">Just one more question, if it's okay.</button>
+</section>
+
+<div class="modal" id="cta-modal" aria-hidden="true" role="dialog" aria-labelledby="cta-modal-title">
+  <div class="modal__box">
+    <button class="modal__close" id="cta-modal-close" aria-label="Close">&times;</button>
+    <div id="cta-modal-question">
+      <p class="modal__title" id="cta-modal-title">What's your favourite cartoon even today?</p>
+      <input type="text" class="modal__input" id="cta-input" placeholder="Type here..." aria-label="Your favourite cartoon">
+      <button class="modal__submit" id="cta-submit">Done</button>
+    </div>
+    <div id="cta-modal-thanks" class="modal__thanks" hidden>
+      <p class="modal__title">Thank you.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
